@@ -59,6 +59,15 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
               </div>
             </div>
 
+            {lead.ai_summary && (
+              <div className="bg-blue-50 shadow rounded-lg p-6 border border-blue-200">
+                <h2 className="text-xl font-semibold mb-4 text-blue-900">Latest AI Summary</h2>
+                <pre className="text-sm text-gray-800 whitespace-pre-wrap font-sans">
+                  {lead.ai_summary}
+                </pre>
+              </div>
+            )}
+
             <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Activity Timeline</h2>
               {lead.activities && lead.activities.length > 0 ? (
