@@ -15,6 +15,10 @@ export interface CrmProvider {
   updateLead(leadId: string, data: any): Promise<boolean>;
 }
 
+export interface DirectMailProvider {
+  createMailTask(leadId: string, campaignType: string): Promise<boolean>;
+}
+
 export class MockVoiceProvider implements VoiceProvider {
   async callLead(leadId: string) {
     console.log(`Mock: Calling lead ${leadId}`);
@@ -22,6 +26,13 @@ export class MockVoiceProvider implements VoiceProvider {
   }
   async warmTransfer(leadId: string, agentPhone: string) {
     console.log(`Mock: Warm transferring lead ${leadId} to agent ${agentPhone}`);
+    return true;
+  }
+}
+
+export class MockDirectMailProvider implements DirectMailProvider {
+  async createMailTask(leadId: string, campaignType: string) {
+    console.log(`Mock: Creating Direct Mail Task for lead ${leadId} - Campaign: ${campaignType}`);
     return true;
   }
 }

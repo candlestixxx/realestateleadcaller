@@ -78,6 +78,9 @@ export default function Dashboard() {
           <Link href="/workflows" className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">
             View Workflows
           </Link>
+          <Link href="/direct-mail" className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">
+            Direct Mail Tasks
+          </Link>
         </div>
       </div>
     </div>
