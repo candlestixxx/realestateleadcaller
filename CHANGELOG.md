@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Version numbers are tracked globally in `VERSION.md`.
+
+## [0.1.0] - 2026-05-25
+
+### Added
+- Phase 1 & 2: Initialized Next.js project foundation (App Router, Tailwind CSS, TypeScript).
+- Phase 1 & 2: Set up Prisma ORM with SQLite and defined data models (`User`, `Agent`, `Lead`, `FollowUpWorkflow`, etc.).
+- Phase 1 & 2: Built MVP UI for Dashboard, Leads list, Lead creation, Lead profile, and Workflow viewer.
+- Phase 3: Implemented the Workflow Engine Tick API (`/api/engine/tick`) to simulate background processing of lead follow-ups.
+- Phase 3: Automated workflow assignment and scheduling for new leads based on lead type.
+- Phase 4: Added `src/lib/scripts.ts` to manage reusable AI scripts (Buyer, Seller, Circle Prospecting, Warm Transfer) with variable replacement.
+- Phase 5: Updated Workflow Trigger API to implement detailed Mock Warm Transfer: triggers compiled scripts, mocks agent accept, creates AI Conversation Summaries, and updates lead status.
+- Phase 5: Updated Lead Profile UI to dynamically render AI Summaries.
+- Phase 6: Added `/api/direct-mail` routes for creating and updating direct mail tasks linked to leads.
+- Phase 6: Built `/direct-mail` UI page to list tasks and mark them as sent.
+- Phase 7: Added Mock Adapters for `VoiceProvider`, `SmsProvider`, `EmailProvider`, `CrmProvider`, `DirectMailProvider`, `CalendarProvider`, and `SocialMessagingProvider`.
+- Phase 8: Overhauled `README.md` and created `.env.example` for documentation polish.
+- Created `VISION.md`, `MEMORY.md`, `DEPLOY.md`, `IDEAS.md`, `ROADMAP.md`, `TODO.md`, and `HANDOFF.md` for project governance.
