@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  agents    Agent[]
+}
+
+model Agent {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  leads     Lead[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id                 String     @id @default(cuid())
+  first_name         String
+  last_name          String
+  phone              String?
+  email              String?
+  property_address   String?
+  city               String?
+  state              String?
+  zip                String?
+  lead_type          String
+  lead_source        String?
+  status             String     @default("New")
+  urgency_score      Int?
+  motivation         String?
+  timeline           String?
+  budget             String?
+  preapproval_status String?
+  has_agent          Boolean    @default(false)
+  notes              String?
+  ai_summary         String?
+  next_follow_up_at  DateTime?
+  assigned_agent_id  String?
+  agent              Agent?     @relation(fields: [assigned_agent_id], references: [id])
+  activeWorkflowId   String?
+  activeWorkflow     FollowUpWorkflow? @relation(fields: [activeWorkflowId], references: [id])
+  currentWorkflowDay Int?
+  activities         LeadActivity[]
+  scores             LeadScore[]
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+model LeadActivity {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  type        String
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model FollowUpWorkflow {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  steps       FollowUpStep[]
+  leads       Lead[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FollowUpStep {
+  id          String   @id @default(cuid())
+  workflowId  String
+  workflow    FollowUpWorkflow @relation(fields: [workflowId], references: [id])
+  day         Int
+  timeOffset  Int?
+  channel     String
+  message     String?
+  script      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Conversation {
+  id          String   @id @default(cuid())
+  leadId      String
+  transcript  String?
+  summary     AIConversationSummary?
+  createdAt   DateTime @default(now())
+}
+
+model CallLog {
+  id          String   @id @default(cuid())
+  leadId      String
+  duration    Int?
+  outcome     String?
+  createdAt   DateTime @default(now())
+}
+
+model MessageLog {
+  id          String   @id @default(cuid())
+  leadId      String
+  message     String
+  channel     String
+  createdAt   DateTime @default(now())
+}
+
+model EmailLog {
+  id          String   @id @default(cuid())
+  leadId      String
+  subject     String
+  body        String
+  createdAt   DateTime @default(now())
+}
+
+model DirectMailTask {
+  id          String   @id @default(cuid())
+  leadId      String
+  status      String
+  campaignType String
+  createdAt   DateTime @default(now())
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  leadId      String
+  agentId     String
+  date        DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+}
+
+model AIConversationSummary {
+  id             String       @id @default(cuid())
+  conversationId String       @unique
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  summary        String
+  createdAt      DateTime     @default(now())
+}
+
+model LeadScore {
+  id          String   @id @default(cuid())
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id])
+  score       Int
+  reason      String?
+  createdAt   DateTime @default(now())
+}
+
+model IntegrationSettings {
+  id          String   @id @default(cuid())
+  provider    String
+  apiKey      String
+  createdAt   DateTime @default(now())
+}

@@ -1,0 +1,99 @@
+'use client';
+
+import { useEffect, useState, use } from 'react';
+import Link from 'next/link';
+
+export default function LeadProfilePage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const [lead, setLead] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/leads/${resolvedParams.id}`)
+      .then(res => res.json())
+      .then(data => {
+        setLead(data);
+        setLoading(false);
+      });
+  }, [resolvedParams.id]);
+
+  const triggerAction = async (action: string) => {
+    try {
+      const res = await fetch('/api/workflows/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId: lead.id, action, agentPhone: '555-1234' })
+      });
+      const result = await res.json();
+      alert(result.message || 'Action triggered successfully');
+      // Refresh lead data
+      const updatedRes = await fetch(`/api/leads/${resolvedParams.id}`);
+      const updatedData = await updatedRes.json();
+      setLead(updatedData);
+    } catch (e) {
+      alert('Error triggering action');
+    }
+  };
+
+  if (loading) return <div className="p-8">Loading...</div>;
+  if (!lead) return <div className="p-8">Lead not found</div>;
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-4xl mx-auto">
+        <header className="mb-6 flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">{lead.first_name} {lead.last_name}</h1>
+          <Link href="/leads" className="text-blue-600 hover:underline">Back to Leads</Link>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-6">
+            <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+              <h2 className="text-xl font-semibold mb-4">Contact Details</h2>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div><span className="text-gray-500 block">Email</span> {lead.email || 'N/A'}</div>
+                <div><span className="text-gray-500 block">Phone</span> {lead.phone || 'N/A'}</div>
+                <div><span className="text-gray-500 block">Type</span> {lead.lead_type}</div>
+                <div><span className="text-gray-500 block">Status</span> {lead.status}</div>
+                <div><span className="text-gray-500 block">Score</span> {lead.urgency_score || 0}/100</div>
+              </div>
+            </div>
+
+            <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+              <h2 className="text-xl font-semibold mb-4">Activity Timeline</h2>
+              {lead.activities && lead.activities.length > 0 ? (
+                <ul className="space-y-4">
+                  {lead.activities.map((act: any) => (
+                    <li key={act.id} className="text-sm">
+                      <span className="font-medium text-gray-900">{act.type}</span>: {act.description}
+                      <span className="text-gray-500 ml-2 text-xs">{new Date(act.createdAt).toLocaleString()}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">No activity recorded yet.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+              <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+              <div className="space-y-3">
+                <button onClick={() => triggerAction('call')} className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                  AI Call
+                </button>
+                <button onClick={() => triggerAction('sms')} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                  Send SMS
+                </button>
+                <button onClick={() => triggerAction('warm_transfer')} className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                  Mock Warm Transfer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
