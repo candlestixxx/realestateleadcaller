@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Real Estate Concierge Follow-Up System
 
-## Getting Started
+This is a Minimum Viable Product (MVP) for "Jules", an AI Real Estate Concierge designed to automatically contact, qualify, nurture, and warm-transfer real estate leads.
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS.
+*   **Backend**: Next.js API Routes.
+*   **Database**: SQLite via Prisma ORM.
+*   **Adapters**: A modular adapter pattern (`src/lib/adapters`) is used to mock external communications (Voice, SMS, Email, CRM, Direct Mail, Calendar, Social Messaging) for the MVP phase.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1.  **Dashboard**: Centralized view of lead statistics and overdue follow-ups.
+2.  **Lead Management**: View all leads, add new leads, and view detailed lead profiles with communication history and AI summaries.
+3.  **Workflow Engine**: An automated state-machine (triggered via `/api/engine/tick`) that processes leads through structured follow-up sequences (e.g., "Buyer 10-Day Blitz").
+4.  **AI Script Engine**: Compiles dynamic conversation scripts based on lead data.
+5.  **Warm Transfers**: Mocks the process of qualifying a lead and bridging them to a human agent, generating an AI summary of the conversation.
+6.  **Direct Mail System**: A UI and API for generating and tracking direct mail tasks.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup Instructions
 
-## Learn More
+1.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+2.  **Set Environment Variables**:
+    Copy the example environment file:
+    ```bash
+    cp .env.example .env
+    ```
+3.  **Initialize the Database**:
+    Push the Prisma schema to the SQLite database and seed the default workflows:
+    ```bash
+    npx prisma db push
+    npm run build # if types are missing
+    npx ts-node -O '{"module":"CommonJS"}' prisma/seed.ts
+    ```
+4.  **Run the Development Server**:
+    ```bash
+    npm run dev
+    ```
+5.  Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## Testing the Workflow Engine
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To simulate the background cron job that processes automated follow-ups:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1.  Click **"Run Workflow Engine"** on the Dashboard, OR
+2.  Run the following `curl` command:
+    ```bash
+    curl -X POST http://localhost:3000/api/engine/tick
+    ```
 
-## Deploy on Vercel
+## Recommended Next Steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  **Implement Real Providers**: Replace the `Mock` classes in `src/lib/adapters` with actual API integrations (e.g., Retell/Vapi for Voice, Twilio for SMS).
+2.  **Cron Job Scheduler**: Set up a real cron job (e.g., using GitHub Actions, Vercel Cron, or a Node scheduler) to hit `/api/engine/tick` automatically.
+3.  **Authentication**: Add NextAuth or similar to secure the dashboard and API routes.
+4.  **Webhooks**: Build inbound webhooks to receive live lead data from external CRMs (Follow Up Boss, KVCore, etc.).

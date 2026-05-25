@@ -19,6 +19,14 @@ export interface DirectMailProvider {
   createMailTask(leadId: string, campaignType: string): Promise<boolean>;
 }
 
+export interface CalendarProvider {
+  createAppointment(leadId: string, date: Date): Promise<boolean>;
+}
+
+export interface SocialMessagingProvider {
+  sendSocialMessage(leadId: string, platform: string, message: string): Promise<boolean>;
+}
+
 export class MockVoiceProvider implements VoiceProvider {
   async callLead(leadId: string) {
     console.log(`Mock: Calling lead ${leadId}`);
@@ -26,6 +34,20 @@ export class MockVoiceProvider implements VoiceProvider {
   }
   async warmTransfer(leadId: string, agentPhone: string) {
     console.log(`Mock: Warm transferring lead ${leadId} to agent ${agentPhone}`);
+    return true;
+  }
+}
+
+export class MockCalendarProvider implements CalendarProvider {
+  async createAppointment(leadId: string, date: Date) {
+    console.log(`Mock: Setting up calendar appointment for lead ${leadId} at ${date}`);
+    return true;
+  }
+}
+
+export class MockSocialMessagingProvider implements SocialMessagingProvider {
+  async sendSocialMessage(leadId: string, platform: string, message: string) {
+    console.log(`Mock: Sending ${platform} message to lead ${leadId}: ${message}`);
     return true;
   }
 }
