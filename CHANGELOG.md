@@ -19,3 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Phase 7: Added Mock Adapters for `VoiceProvider`, `SmsProvider`, `EmailProvider`, `CrmProvider`, `DirectMailProvider`, `CalendarProvider`, and `SocialMessagingProvider`.
 - Phase 8: Overhauled `README.md` and created `.env.example` for documentation polish.
 - Created `VISION.md`, `MEMORY.md`, `DEPLOY.md`, `IDEAS.md`, `ROADMAP.md`, `TODO.md`, and `HANDOFF.md` for project governance.
+- Short-Term Task: Refactored `/workflows` to dynamically fetch database records instead of rendering mock data.
+- Short-Term Task: Set up `.github/workflows/ci.yml` for automated linting and Next.js builds.
+- Short-Term Task: Implemented `GET /api/leads` filter and search capabilities via URL query parameters, and enhanced Leads UI list.
+- Short-Term Task: Created CRM ingestion webhook (`/api/webhooks/crm`).
+- Short-Term Task: Added robust UI error handling and visual workflow step tracking.
+- Short-Term Task: Added manual "Send Direct Mail" dispatch trigger to the Lead Profile UI.
+- Settings: Built `src/app/settings` UI including Agent Profile, Integrations, and AI Scripts sections.
+- Import Leads: Built `src/app/leads/import` utility for bulk CSV lead generation.
