@@ -42,6 +42,8 @@ export class MockVoiceProvider implements VoiceProvider {
   }
 }
 
+export { getCrmProvider } from './crmOutbound';
+
 export class VapiVoiceProvider implements VoiceProvider {
   async callLead(leadId: string) {
     try {

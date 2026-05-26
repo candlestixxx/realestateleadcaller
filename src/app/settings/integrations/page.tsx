@@ -7,6 +7,7 @@ export default function IntegrationsSettingsPage() {
   const [twilioSid, setTwilioSid] = useState('');
   const [twilioToken, setTwilioToken] = useState('');
   const [twilioFromNumber, setTwilioFromNumber] = useState('');
+  const [crmWebhookUrl, setCrmWebhookUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -22,6 +23,7 @@ export default function IntegrationsSettingsPage() {
             if (setting.provider === 'twilio_sid') setTwilioSid(setting.apiKey);
             if (setting.provider === 'twilio_token') setTwilioToken(setting.apiKey);
             if (setting.provider === 'twilio_from_number') setTwilioFromNumber(setting.apiKey);
+            if (setting.provider === 'crm_webhook_url') setCrmWebhookUrl(setting.apiKey);
           });
         }
       } catch (err) {
@@ -139,10 +141,33 @@ export default function IntegrationsSettingsPage() {
         <hr className="border-gray-200" />
 
         <div>
-          <h2 className="text-xl font-semibold mb-2 text-gray-800">CRM Webhook</h2>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Inbound CRM Webhook</h2>
           <p className="text-sm text-gray-500 mb-4">Your personalized webhook URL to receive leads from Zillow or Follow Up Boss.</p>
           <div className="bg-gray-100 p-3 rounded border border-gray-200 font-mono text-sm break-all">
             https://jules-ai.example.com/api/webhooks/crm
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Outbound CRM Webhook</h2>
+          <p className="text-sm text-gray-500 mb-4">Provide an external CRM webhook to sync lead status updates back to your platform.</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="url"
+              placeholder="https://api.followupboss.com/..."
+              value={crmWebhookUrl}
+              onChange={(e) => setCrmWebhookUrl(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('crm_webhook_url', crmWebhookUrl)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
           </div>
         </div>
 

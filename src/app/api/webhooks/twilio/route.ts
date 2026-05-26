@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { SentimentAnalyzer } from "@/lib/adapters/sentiment";
+import { getCrmProvider } from "@/lib/adapters";
 
 const prisma = new PrismaClient();
 
@@ -67,17 +68,23 @@ export async function POST(req: Request) {
 
     // 4. Auto-Pause active workflows to prevent double-messaging
     // Since there's no workflowStatus field, we set activeWorkflowId to null or clear currentWorkflowDay
-    await prisma.lead.update({
-      where: { id: lead.id },
-      data: {
+    const updatedLeadData = {
         status: newStatus,
         activeWorkflowId: null, // Pause the workflow
         // Force an urgency bump if positive
         urgency_score: analysis.intent === "HOT" ? Math.min((lead.urgency_score || 0) + 50, 100) : lead.urgency_score
-      }
+    };
+
+    await prisma.lead.update({
+      where: { id: lead.id },
+      data: updatedLeadData
     });
 
     console.log(`[Twilio Webhook] Lead ${lead.id} status updated to ${newStatus}. Workflow PAUSED.`);
+
+    // 5. Trigger CRM Outbound Sync
+    const crmProvider = getCrmProvider();
+    await crmProvider.updateLead(lead.id, updatedLeadData as any);
 
     // Return empty TwiML response as expected by Twilio
     return new NextResponse("<Response></Response>", {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getCrmProvider } from '@/lib/adapters';
 
 export async function GET(
   request: Request,
@@ -40,6 +41,12 @@ export async function PUT(
       where: { id: leadId },
       data: body,
     });
+
+    // Trigger CRM sync out of band
+    getCrmProvider().updateLead(leadId, body).catch(e => {
+        console.error("Failed async CRM push", e);
+    });
+
     return NextResponse.json(lead);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update lead' }, { status: 500 });

@@ -15,10 +15,11 @@
 - [x] Build a visual drag-and-drop workflow builder on the frontend to replace hardcoded state machine logic.
 
 ## Phase 4: Inbound Intelligence & Two-Way Conversations
-- [ ] Implement Inbound SMS/Email webhook handlers to receive lead replies.
-- [ ] Build LLM-powered Sentiment & Intent Analysis for inbound messages (Auto-categorize: "Hot", "Not Interested", "DNC").
-- [ ] Auto-pause active follow-up workflows if a user replies, and intelligently route to the agent.
+- [x] Implement Inbound SMS webhook handlers to receive lead replies.
+- [x] Build LLM-powered Sentiment & Intent Analysis for inbound messages.
+- [x] Auto-pause active follow-up workflows if a user replies.
+- [ ] Implement Inbound Email webhook handlers to receive lead email replies.
 - [ ] Develop a Knowledge Base module to allow the AI to answer specific FAQs about the team and listings.
 
 ## Phase 5: Outbound Integrations
-- [ ] Implement outbound webhooks to push lead status updates back to upstream CRMs (Follow Up Boss, KVCore).
+- [x] Implement outbound webhooks to push lead status updates back to upstream CRMs (Follow Up Boss, KVCore).

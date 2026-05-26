@@ -25,6 +25,9 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
       if (action === 'direct_mail') {
         endpoint = '/api/direct-mail';
         payload = { leadId: lead.id, campaignType: 'Manual Agent Dispatch' };
+      } else if (action === 'crm_sync') {
+        endpoint = `/api/leads/${lead.id}/sync`;
+        payload = {};
       }
 
       const res = await fetch(endpoint, {
@@ -124,6 +127,11 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 <button onClick={() => triggerAction('direct_mail')} className="w-full bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 mt-4">
                   Send Direct Mail
                 </button>
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <button onClick={() => triggerAction('crm_sync')} className="w-full bg-gray-100 text-gray-800 py-2 px-4 rounded border border-gray-300 hover:bg-gray-200">
+                    Sync to CRM
+                  </button>
+                </div>
               </div>
             </div>
           </div>
