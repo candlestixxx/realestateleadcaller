@@ -19,13 +19,21 @@ export async function POST() {
       }
     });
 
-    const voice = getVoiceProvider();
-    const sms = getSmsProvider();
-    const email = getEmailProvider();
     const results = [];
 
     for (const lead of dueLeads) {
       if (!lead.activeWorkflow || lead.currentWorkflowDay === null) continue;
+
+      // Fetch integration settings specific to this lead's owner (tenant)
+      const settings = await prisma.integrationSettings.findMany({
+        where: { userId: lead.userId || undefined }
+      });
+
+      // Providers will need to accept settings context. For now, since adapters
+      // fetch their own settings, we must pass the userId to them.
+      const voice = getVoiceProvider();
+      const sms = getSmsProvider();
+      const email = getEmailProvider();
 
       // Find the step for the current day
       const currentSteps = lead.activeWorkflow.steps.filter(s => s.day === lead.currentWorkflowDay);

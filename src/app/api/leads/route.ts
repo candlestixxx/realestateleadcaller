@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
     const status = searchParams.get('status');
@@ -27,6 +37,9 @@ export async function GET(request: Request) {
       whereClause.lead_type = type;
     }
 
+    // Apply tenant isolation
+    whereClause.userId = user.id;
+
     const leads = await prisma.lead.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' },
@@ -40,6 +53,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
 
     // Determine the workflow to assign based on lead type
@@ -58,6 +79,7 @@ export async function POST(request: Request) {
         phone: body.phone,
         lead_type: body.lead_type || 'Buyer',
         status: 'New',
+        userId: user.id,
         activeWorkflowId: targetWorkflow ? targetWorkflow.id : undefined,
         currentWorkflowDay: targetWorkflow ? 0 : undefined,
         next_follow_up_at: targetWorkflow ? new Date() : undefined, // Schedule immediately

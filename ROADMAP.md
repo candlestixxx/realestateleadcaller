@@ -2,7 +2,7 @@
 
 ## Phase 1: Real-World Integrations
 - [x] Connect Twilio for real outbound/inbound SMS functionality.
-- [ ] Connect Vapi or Retell AI for live Voice calling and warm bridging.
+- [x] Connect Vapi or Retell AI for live Voice calling and warm bridging.
 - [x] Integrate SendGrid for email dispatch and tracking (opens, clicks).
 
 ## Phase 2: Security & Authentication

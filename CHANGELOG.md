@@ -32,3 +32,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Phase 2 Security: Added credential-based authentication UI (`/login`).
 - Phase 1 Integration: Implemented `TwilioSmsProvider` adapter.
 - Phase 1 Integration: Implemented `SendGridEmailProvider` adapter.
+- Phase 1 Integration: Implemented `VapiVoiceProvider` adapter.

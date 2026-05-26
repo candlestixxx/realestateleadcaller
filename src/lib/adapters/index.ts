@@ -41,8 +41,11 @@ export class MockVoiceProvider implements VoiceProvider {
 export class VapiVoiceProvider implements VoiceProvider {
   async callLead(leadId: string) {
     try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
+
       const settings = await prisma.integrationSettings.findMany({
-        where: { provider: 'vapi' }
+        where: { provider: 'vapi', userId: lead.userId || undefined }
       });
       const vapiKey = settings.find(s => s.provider === 'vapi')?.apiKey;
 
@@ -50,9 +53,6 @@ export class VapiVoiceProvider implements VoiceProvider {
         console.warn('Vapi credentials missing, falling back to mock provider');
         return new MockVoiceProvider().callLead(leadId);
       }
-
-      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
 
       const response = await fetch('https://api.vapi.ai/call/phone', {
         method: 'POST',
@@ -97,8 +97,14 @@ import sgMail from '@sendgrid/mail';
 export class SendGridEmailProvider implements EmailProvider {
   async sendEmail(leadId: string, subject: string, body: string) {
     try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.email) throw new Error('Lead email address missing');
+
       const settings = await prisma.integrationSettings.findMany({
-        where: { provider: { in: ['sendgrid_api_key', 'sendgrid_from_email'] } }
+        where: {
+          provider: { in: ['sendgrid_api_key', 'sendgrid_from_email'] },
+          userId: lead.userId || undefined
+        }
       });
 
       const apiKey = settings.find(s => s.provider === 'sendgrid_api_key')?.apiKey;
@@ -108,9 +114,6 @@ export class SendGridEmailProvider implements EmailProvider {
         console.warn('SendGrid credentials incomplete, falling back to mock provider');
         return new MockEmailProvider().sendEmail(leadId, subject, body);
       }
-
-      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-      if (!lead || !lead.email) throw new Error('Lead email address missing');
 
       sgMail.setApiKey(apiKey);
 
@@ -169,8 +172,14 @@ import { prisma } from '@/lib/prisma';
 export class TwilioSmsProvider implements SmsProvider {
   async sendText(leadId: string, message: string) {
     try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
+
       const settings = await prisma.integrationSettings.findMany({
-        where: { provider: { in: ['twilio_sid', 'twilio_token', 'twilio_from_number'] } }
+        where: {
+          provider: { in: ['twilio_sid', 'twilio_token', 'twilio_from_number'] },
+          userId: lead.userId || undefined
+        }
       });
 
       const sid = settings.find(s => s.provider === 'twilio_sid')?.apiKey;
@@ -181,9 +190,6 @@ export class TwilioSmsProvider implements SmsProvider {
         console.warn('Twilio credentials incomplete, falling back to mock provider');
         return new MockSmsProvider().sendText(leadId, message);
       }
-
-      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
 
       const client = twilio(sid, token);
       await client.messages.create({
