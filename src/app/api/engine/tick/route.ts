@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
+import { getVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
 
 export async function POST() {
   try {
@@ -19,7 +19,7 @@ export async function POST() {
       }
     });
 
-    const voice = new MockVoiceProvider();
+    const voice = getVoiceProvider();
     const sms = getSmsProvider();
     const email = getEmailProvider();
     const results = [];

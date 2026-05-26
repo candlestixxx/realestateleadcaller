@@ -1,9 +1,9 @@
 # ROADMAP: Long-Term Structural Milestones
 
 ## Phase 1: Real-World Integrations
-- [ ] Connect Twilio for real outbound/inbound SMS functionality.
+- [x] Connect Twilio for real outbound/inbound SMS functionality.
 - [ ] Connect Vapi or Retell AI for live Voice calling and warm bridging.
-- [ ] Integrate SendGrid for email dispatch and tracking (opens, clicks).
+- [x] Integrate SendGrid for email dispatch and tracking (opens, clicks).
 
 ## Phase 2: Security & Authentication
 - [x] Implement NextAuth for agent login.

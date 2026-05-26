@@ -38,6 +38,60 @@ export class MockVoiceProvider implements VoiceProvider {
   }
 }
 
+export class VapiVoiceProvider implements VoiceProvider {
+  async callLead(leadId: string) {
+    try {
+      const settings = await prisma.integrationSettings.findMany({
+        where: { provider: 'vapi' }
+      });
+      const vapiKey = settings.find(s => s.provider === 'vapi')?.apiKey;
+
+      if (!vapiKey) {
+        console.warn('Vapi credentials missing, falling back to mock provider');
+        return new MockVoiceProvider().callLead(leadId);
+      }
+
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
+
+      const response = await fetch('https://api.vapi.ai/call/phone', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${vapiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumberId: 'your-vapi-phone-number-id', // Assuming static or from settings in a real app
+          customer: {
+            number: lead.phone,
+            name: `${lead.first_name} ${lead.last_name}`,
+          },
+          assistantId: 'your-vapi-assistant-id', // Assuming static or from settings
+        }),
+      });
+
+      if (!response.ok) throw new Error(`Vapi API error: ${response.statusText}`);
+
+      console.log(`Vapi: Successfully initiated call to ${lead.phone}`);
+      return true;
+    } catch (e) {
+      console.error('Vapi Error:', e);
+      return false;
+    }
+  }
+
+  async warmTransfer(leadId: string, agentPhone: string) {
+    console.log(`Vapi Mock: Warm transferring lead ${leadId} to agent ${agentPhone}`);
+    // Note: Warm transfers in Vapi typically require handling mid-call functions
+    // via a Server URL. For MVP outbound, we mock this specific step.
+    return true;
+  }
+}
+
+export function getVoiceProvider(): VoiceProvider {
+  return new VapiVoiceProvider();
+}
+
 import sgMail from '@sendgrid/mail';
 
 export class SendGridEmailProvider implements EmailProvider {
