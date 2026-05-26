@@ -27,3 +27,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Short-Term Task: Added manual "Send Direct Mail" dispatch trigger to the Lead Profile UI.
 - Settings: Built `src/app/settings` UI including Agent Profile, Integrations, and AI Scripts sections.
 - Import Leads: Built `src/app/leads/import` utility for bulk CSV lead generation.
+- Phase 2 Security: Configured `next-auth` and `bcryptjs` for session management.
+- Phase 2 Security: Protected internal API and dashboard routes via Next.js middleware.
+- Phase 2 Security: Added credential-based authentication UI (`/login`).

@@ -6,7 +6,7 @@
 - [ ] Integrate SendGrid for email dispatch and tracking (opens, clicks).
 
 ## Phase 2: Security & Authentication
-- [ ] Implement NextAuth for agent login.
+- [x] Implement NextAuth for agent login.
 - [ ] Implement Row-Level Security / Multi-tenancy so multiple agents can use the platform without seeing each other's leads.
 
 ## Phase 3: Advanced Automation & MCP

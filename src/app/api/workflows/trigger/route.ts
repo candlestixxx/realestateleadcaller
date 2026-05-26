@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockVoiceProvider, getSmsProvider, MockEmailProvider } from '@/lib/adapters';
+import { MockVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
 import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
 
 export async function POST(request: Request) {
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     const voice = new MockVoiceProvider();
     const sms = getSmsProvider();
-    const email = new MockEmailProvider();
+    const email = getEmailProvider();
 
     const scriptData = {
       first_name: lead.first_name,

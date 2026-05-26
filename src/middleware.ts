@@ -12,12 +12,13 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - api/webhooks (public webhook routes)
+     * - api/engine (cron job triggers)
      * - api/auth (NextAuth routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - login (the login page itself)
      */
-    "/((?!api/webhooks|api/auth|_next/static|_next/image|favicon.ico|login).*)",
+    "/((?!api/webhooks|api/engine|api/auth|_next/static|_next/image|favicon.ico|login).*)",
   ],
 };

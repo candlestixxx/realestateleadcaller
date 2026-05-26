@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockVoiceProvider, getSmsProvider, MockEmailProvider } from '@/lib/adapters';
+import { MockVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
 
 export async function POST() {
   try {
@@ -21,7 +21,7 @@ export async function POST() {
 
     const voice = new MockVoiceProvider();
     const sms = getSmsProvider();
-    const email = new MockEmailProvider();
+    const email = getEmailProvider();
     const results = [];
 
     for (const lead of dueLeads) {

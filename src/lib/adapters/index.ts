@@ -38,6 +38,49 @@ export class MockVoiceProvider implements VoiceProvider {
   }
 }
 
+import sgMail from '@sendgrid/mail';
+
+export class SendGridEmailProvider implements EmailProvider {
+  async sendEmail(leadId: string, subject: string, body: string) {
+    try {
+      const settings = await prisma.integrationSettings.findMany({
+        where: { provider: { in: ['sendgrid_api_key', 'sendgrid_from_email'] } }
+      });
+
+      const apiKey = settings.find(s => s.provider === 'sendgrid_api_key')?.apiKey;
+      const fromEmail = settings.find(s => s.provider === 'sendgrid_from_email')?.apiKey;
+
+      if (!apiKey || !fromEmail) {
+        console.warn('SendGrid credentials incomplete, falling back to mock provider');
+        return new MockEmailProvider().sendEmail(leadId, subject, body);
+      }
+
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.email) throw new Error('Lead email address missing');
+
+      sgMail.setApiKey(apiKey);
+
+      const msg = {
+        to: lead.email,
+        from: fromEmail,
+        subject: subject,
+        text: body,
+      };
+
+      await sgMail.send(msg);
+      console.log(`SendGrid: Successfully sent email to ${lead.email}`);
+      return true;
+    } catch (e) {
+      console.error('SendGrid Error:', e);
+      return false;
+    }
+  }
+}
+
+export function getEmailProvider(): EmailProvider {
+  return new SendGridEmailProvider();
+}
+
 export class MockCalendarProvider implements CalendarProvider {
   async createAppointment(leadId: string, date: Date) {
     console.log(`Mock: Setting up calendar appointment for lead ${leadId} at ${date}`);
