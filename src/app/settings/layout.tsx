@@ -13,6 +13,7 @@ export default function SettingsLayout({
           <Link href="/settings" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-md">Agent Profile</Link>
           <Link href="/settings/integrations" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-md">Integrations</Link>
           <Link href="/settings/scripts" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-md">AI Call Scripts</Link>
+          <Link href="/settings/knowledge" className="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-md">Knowledge Base</Link>
           <div className="pt-6">
             <Link href="/" className="block px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-md">&larr; Back to Dashboard</Link>
           </div>

@@ -17,6 +17,7 @@ model User {
   agents    Agent[]
   leads     Lead[]
   settings  IntegrationSettings[]
+  knowledge KnowledgeBaseSnippet[]
 }
 
 model Agent {
@@ -169,4 +170,15 @@ model IntegrationSettings {
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model KnowledgeBaseSnippet {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String?  @default("General")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

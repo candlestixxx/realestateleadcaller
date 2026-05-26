@@ -60,6 +60,17 @@ export class VapiVoiceProvider implements VoiceProvider {
         return new MockVoiceProvider().callLead(leadId);
       }
 
+      // Fetch knowledge base snippets to inject into the AI
+      const snippets = await prisma.knowledgeBaseSnippet.findMany({
+        where: { userId: lead.userId || undefined }
+      });
+
+      let knowledgeContext = "";
+      if (snippets.length > 0) {
+        knowledgeContext = "\n\nKNOWLEDGE BASE (Use these facts to answer questions):\n" +
+          snippets.map(s => `Q: ${s.question}\nA: ${s.answer}`).join("\n\n");
+      }
+
       const response = await fetch('https://api.vapi.ai/call/phone', {
         method: 'POST',
         headers: {
@@ -71,6 +82,9 @@ export class VapiVoiceProvider implements VoiceProvider {
           customer: {
             number: lead.phone,
             name: `${lead.first_name} ${lead.last_name}`,
+          },
+          assistantOverrides: {
+            systemPrompt: `You are Jules, an AI real estate assistant. ${knowledgeContext}`
           },
           assistantId: 'your-vapi-assistant-id', // Assuming static or from settings
         }),

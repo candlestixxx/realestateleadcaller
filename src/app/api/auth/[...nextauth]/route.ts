@@ -34,6 +34,20 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
   },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        (session.user as any).id = token.id;
+      }
+      return session;
+    }
+  },
   secret: process.env.NEXTAUTH_SECRET || "default_dev_secret_change_me_in_prod",
 };
 
