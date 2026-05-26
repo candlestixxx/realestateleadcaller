@@ -41,6 +41,7 @@ export default function LeadsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Leads</h1>
           <div className="space-x-4">
             <Link href="/" className="text-blue-600 hover:underline">Back to Dashboard</Link>
+            <Link href="/leads/import" className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">Import Leads</Link>
             <Link href="/leads/new" className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">Add New Lead</Link>
           </div>
         </header>

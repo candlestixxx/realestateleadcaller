@@ -7,12 +7,12 @@
 - Local:         http://localhost:3001
 - Network:       http://192.168.0.2:3001
 - Environments: .env
-✓ Ready in 617ms
-⨯ Another next dev server is already running.
-
-- Local:        http://localhost:3 GET /leads 200 in 424ms (next.js: 142ms, application-code: 282ms)
- GET /api/leads? 200 in 94ms (next.js: 71ms, application-code: 23ms)
- GET /api/leads?search=Jane 200 in 20ms (next.js: 7ms, application-code: 13ms)
- GET /api/leads? 200 in 14ms (next.js: 3ms, application-code: 11ms)
- GET /api/leads?status=New 200 in 14ms (next.js: 4ms, application-code: 10ms)
+✓ Ready in GET /settings 200 in 1225ms (next.js: 870ms, application-code: 355ms)
+ GET /settings/integrations 200 in 590ms (next.js: 532ms, application-code: 58ms)
+ GET /settings/scripts 200 in 555ms (next.js: 510ms, application-code: 45ms)
+ GET /leads 200 in 108ms (next.js: 27ms, application-code: 81ms)
+ GET /api/leads? 200 in 137ms (next.js: 71ms, application-code: 66ms)
+ GET /leads/import 200 in 566ms (next.js: 520ms, application-code: 46ms)
+ POST /api/leads 201 in 34ms (next.js: 4ms, application-code: 30ms)
+ POST /api/leads 201 in 21ms (next.js: 4ms, application-code: 17ms)
 [?25h

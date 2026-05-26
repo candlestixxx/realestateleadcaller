@@ -81,6 +81,9 @@ export default function Dashboard() {
           <Link href="/direct-mail" className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">
             Direct Mail Tasks
           </Link>
+          <Link href="/settings" className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">
+            Settings
+          </Link>
         </div>
       </div>
     </div>
