@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockVoiceProvider, MockSmsProvider, MockEmailProvider } from '@/lib/adapters';
+import { MockVoiceProvider, getSmsProvider, MockEmailProvider } from '@/lib/adapters';
 import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
 
 export async function POST(request: Request) {
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
 
     const voice = new MockVoiceProvider();
-    const sms = new MockSmsProvider();
+    const sms = getSmsProvider();
     const email = new MockEmailProvider();
 
     const scriptData = {

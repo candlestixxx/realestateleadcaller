@@ -1,9 +1,76 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 export default function IntegrationsSettingsPage() {
+  const [vapiKey, setVapiKey] = useState('');
+  const [twilioSid, setTwilioSid] = useState('');
+  const [twilioToken, setTwilioToken] = useState('');
+  const [twilioFromNumber, setTwilioFromNumber] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const data = await res.json();
+          data.forEach((setting: any) => {
+            if (setting.provider === 'vapi') setVapiKey(setting.apiKey);
+            if (setting.provider === 'twilio_sid') setTwilioSid(setting.apiKey);
+            if (setting.provider === 'twilio_token') setTwilioToken(setting.apiKey);
+            if (setting.provider === 'twilio_from_number') setTwilioFromNumber(setting.apiKey);
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load settings');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSave = async (provider: string, apiKey: string) => {
+    setSaving(true);
+    setMessage(null);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, apiKey })
+      });
+      if (res.ok) {
+        setMessage('Settings saved successfully!');
+      } else {
+        setMessage('Failed to save settings.');
+      }
+    } catch (err) {
+      setMessage('Error saving settings.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTwilioSave = async () => {
+    await handleSave('twilio_sid', twilioSid);
+    await handleSave('twilio_token', twilioToken);
+    await handleSave('twilio_from_number', twilioFromNumber);
+  };
+
+  if (loading) return <div>Loading settings...</div>;
+
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Integrations</h1>
+
+      {message && (
+        <div className="mb-4 p-4 text-green-700 bg-green-100 rounded-md border border-green-200">
+          {message}
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow p-6 border border-gray-200 space-y-8">
 
@@ -11,8 +78,20 @@ export default function IntegrationsSettingsPage() {
           <h2 className="text-xl font-semibold mb-2 text-gray-800">Voice AI (Vapi / Retell)</h2>
           <p className="text-sm text-gray-500 mb-4">Connect your voice provider for outbound AI calling.</p>
           <div className="flex items-center space-x-4">
-            <input type="password" placeholder="sk_test_..." className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm" />
-            <button className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">Connect</button>
+            <input
+              type="password"
+              placeholder="sk_test_..."
+              value={vapiKey}
+              onChange={(e) => setVapiKey(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('vapi', vapiKey)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
           </div>
         </div>
 
@@ -22,10 +101,37 @@ export default function IntegrationsSettingsPage() {
           <h2 className="text-xl font-semibold mb-2 text-gray-800">SMS (Twilio)</h2>
           <p className="text-sm text-gray-500 mb-4">Configure Twilio credentials for text message follow-ups.</p>
           <div className="space-y-4">
-            <input type="text" placeholder="Account SID" className="w-full rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm" />
+            <input
+              type="text"
+              placeholder="Account SID"
+              value={twilioSid}
+              onChange={(e) => setTwilioSid(e.target.value)}
+              className="w-full rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
             <div className="flex items-center space-x-4">
-              <input type="password" placeholder="Auth Token" className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm" />
-              <button className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50">Connect</button>
+              <input
+                type="password"
+                placeholder="Auth Token"
+                value={twilioToken}
+                onChange={(e) => setTwilioToken(e.target.value)}
+                className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+              />
+            </div>
+            <div className="flex items-center space-x-4">
+               <input
+                type="text"
+                placeholder="From Phone Number (e.g. +1234567890)"
+                value={twilioFromNumber}
+                onChange={(e) => setTwilioFromNumber(e.target.value)}
+                className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+              />
+              <button
+                onClick={handleTwilioSave}
+                disabled={saving}
+                className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+              >
+                Save Twilio Settings
+              </button>
             </div>
           </div>
         </div>

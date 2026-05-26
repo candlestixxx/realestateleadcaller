@@ -66,6 +66,49 @@ export class MockSmsProvider implements SmsProvider {
   }
 }
 
+import twilio from 'twilio';
+import { prisma } from '@/lib/prisma';
+
+export class TwilioSmsProvider implements SmsProvider {
+  async sendText(leadId: string, message: string) {
+    try {
+      const settings = await prisma.integrationSettings.findMany({
+        where: { provider: { in: ['twilio_sid', 'twilio_token', 'twilio_from_number'] } }
+      });
+
+      const sid = settings.find(s => s.provider === 'twilio_sid')?.apiKey;
+      const token = settings.find(s => s.provider === 'twilio_token')?.apiKey;
+      const from = settings.find(s => s.provider === 'twilio_from_number')?.apiKey;
+
+      if (!sid || !token || !from) {
+        console.warn('Twilio credentials incomplete, falling back to mock provider');
+        return new MockSmsProvider().sendText(leadId, message);
+      }
+
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.phone) throw new Error('Lead phone number missing');
+
+      const client = twilio(sid, token);
+      await client.messages.create({
+        body: message,
+        from: from,
+        to: lead.phone
+      });
+
+      console.log(`Twilio: Successfully sent SMS to ${lead.phone}`);
+      return true;
+    } catch (e) {
+      console.error('Twilio Error:', e);
+      return false;
+    }
+  }
+}
+
+export function getSmsProvider(): SmsProvider {
+  // Can be configured to switch dynamically based on environment or settings
+  return new TwilioSmsProvider();
+}
+
 export class MockEmailProvider implements EmailProvider {
   async sendEmail(leadId: string, subject: string, body: string) {
     console.log(`Mock: Sending Email to lead ${leadId} - ${subject}`);

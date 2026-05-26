@@ -2,19 +2,20 @@
 > temp_app@0.1.0 dev
 > next dev
 
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
 ▲ Next.js 16.2.6 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
 - Environments: .env
-✓ Ready in 601ms
-⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+✓ Ready in 727ms
+⨯ Another next dev server is already running.
 
- GET /login?callbackUrl=%2F 200 in 709ms (next.js: 262ms, application-code: 447ms)
- GET /api/auth/providers 200 in 1126ms (next.js: 1080ms, application-code: 46ms)
- GET /api/auth/csrf 200 in 51ms (next.js: 27ms, application-code: 24ms)
- POST /api/auth/callback/credentials 200 in 292ms (next.js: 5ms, application-code: 287ms)
- GET / 200 in 194ms (next.js: 46ms, proxy.ts: 29ms, application-code: 120ms)
- GET / 200 in 109ms (next.js: 16ms, proxy.ts: 24ms, application-code: 69ms)
- GET /api/dashboard 200 in 127ms (next.js: 69ms, proxy.ts: 31ms, application-code: 27ms)
- GET /api/dashboard 200 in 54ms (next.js: 6ms, proxy.ts: 14ms, application-code: 34ms)
+- Local:        GET /login?callbackUrl=%2F 200 in 1275ms (next.js: 511ms, application-code: 764ms)
+ GET /api/auth/providers 200 in 1138ms (next.js: 1092ms, application-code: 46ms)
+ GET /api/auth/csrf 200 in 78ms (next.js: 48ms, application-code: 30ms)
+ POST /api/auth/callback/credentials 200 in 303ms (next.js: 5ms, application-code: 298ms)
+ GET / 200 in 247ms (next.js: 54ms, proxy.ts: 24ms, application-code: 168ms)
+ GET / 200 in 68ms (next.js: 6ms, proxy.ts: 17ms, application-code: 45ms)
+ GET /api/dashboard 200 in 138ms (next.js: 74ms, proxy.ts: 14ms, application-code: 50ms)
+ GET /api/dashboard 200 in 53ms (next.js: 8ms, proxy.ts: 13ms, application-code: 31ms)
 [?25h
