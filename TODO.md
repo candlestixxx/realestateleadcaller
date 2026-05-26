@@ -8,4 +8,4 @@
 
 ## Next Steps for Workflow Engine
 - [x] Connect the Visual Workflow Builder UI to the `POST /api/workflows` and `PUT /api/workflows/[id]` endpoints to persist step orders.
-- [ ] Move the Workflow Engine execution logic from the `/api/engine/tick` cron endpoint to a dedicated background task queue (e.g., Inngest or BullMQ) for better scalability and retry mechanics.
+- [x] Move the Workflow Engine execution logic from the `/api/engine/tick` cron endpoint to a dedicated background task queue (e.g., Inngest or BullMQ) for better scalability and retry mechanics.

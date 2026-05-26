@@ -40,3 +40,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Phase 3 Advanced Automation: Scaffolded the Drag-and-Drop Visual Workflow Builder foundation (`src/app/workflows/builder`).
 - Phase 3 Advanced Automation: Built `POST` and `PUT` endpoints at `/api/workflows` to support workflow creation and dynamic step re-ordering.
 - Phase 3 Advanced Automation: Connected the Visual Workflow Builder UI to the Prisma backend to fetch live workflows and persist drag-and-drop step modifications.
+- Phase 3 Advanced Automation: Replaced the synchronous workflow cron tick with `inngest`, moving the state-machine execution logic to a parallelized, auto-retrying background task queue.

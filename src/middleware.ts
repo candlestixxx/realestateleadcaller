@@ -14,11 +14,12 @@ export const config = {
      * - api/webhooks (public webhook routes)
      * - api/engine (cron job triggers)
      * - api/auth (NextAuth routes)
+     * - api/mcp (Model Context Protocol endpoints)
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - login (the login page itself)
      */
-    "/((?!api/webhooks|api/engine|api/auth|_next/static|_next/image|favicon.ico|login).*)",
+    "/((?!api/webhooks|api/engine|api/auth|api/mcp|_next/static|_next/image|favicon.ico|login).*)",
   ],
 };
