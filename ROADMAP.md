@@ -11,5 +11,14 @@
 
 ## Phase 3: Advanced Automation & MCP
 - [x] Move the Workflow Engine to a dedicated task queue (e.g., BullMQ, Inngest) instead of a simple tick endpoint.
-- [ ] Expose an MCP Server so the AI caller can dynamically query live MLS inventory during a call.
-- [ ] Build a visual drag-and-drop workflow builder on the frontend to replace hardcoded state machine logic.
+- [x] Expose an MCP Server so the AI caller can dynamically query live MLS inventory during a call.
+- [x] Build a visual drag-and-drop workflow builder on the frontend to replace hardcoded state machine logic.
+
+## Phase 4: Inbound Intelligence & Two-Way Conversations
+- [ ] Implement Inbound SMS/Email webhook handlers to receive lead replies.
+- [ ] Build LLM-powered Sentiment & Intent Analysis for inbound messages (Auto-categorize: "Hot", "Not Interested", "DNC").
+- [ ] Auto-pause active follow-up workflows if a user replies, and intelligently route to the agent.
+- [ ] Develop a Knowledge Base module to allow the AI to answer specific FAQs about the team and listings.
+
+## Phase 5: Outbound Integrations
+- [ ] Implement outbound webhooks to push lead status updates back to upstream CRMs (Follow Up Boss, KVCore).
