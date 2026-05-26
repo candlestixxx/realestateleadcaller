@@ -19,19 +19,31 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
 
   const triggerAction = async (action: string) => {
     try {
-      const res = await fetch('/api/workflows/trigger', {
+      let endpoint = '/api/workflows/trigger';
+      let payload: any = { leadId: lead.id, action, agentPhone: '555-1234' };
+
+      if (action === 'direct_mail') {
+        endpoint = '/api/direct-mail';
+        payload = { leadId: lead.id, campaignType: 'Manual Agent Dispatch' };
+      }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leadId: lead.id, action, agentPhone: '555-1234' })
+        body: JSON.stringify(payload)
       });
       const result = await res.json();
-      alert(result.message || 'Action triggered successfully');
+
+      if (!res.ok) throw new Error(result.error || 'Action failed');
+
+      alert(result.message || (action === 'direct_mail' ? 'Direct mail task created successfully' : 'Action triggered successfully'));
+
       // Refresh lead data
       const updatedRes = await fetch(`/api/leads/${resolvedParams.id}`);
       const updatedData = await updatedRes.json();
       setLead(updatedData);
-    } catch (e) {
-      alert('Error triggering action');
+    } catch (e: any) {
+      alert(e.message || 'Error triggering action');
     }
   };
 
@@ -56,6 +68,12 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 <div><span className="text-gray-500 block">Type</span> {lead.lead_type}</div>
                 <div><span className="text-gray-500 block">Status</span> {lead.status}</div>
                 <div><span className="text-gray-500 block">Score</span> {lead.urgency_score || 0}/100</div>
+                {lead.activeWorkflow && (
+                  <div className="col-span-2 mt-2 p-3 bg-indigo-50 border border-indigo-100 rounded text-indigo-800">
+                    <span className="font-semibold block mb-1">Active Workflow:</span>
+                    {lead.activeWorkflow.name} (Day {lead.currentWorkflowDay})
+                  </div>
+                )}
               </div>
             </div>
 
@@ -97,6 +115,9 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 </button>
                 <button onClick={() => triggerAction('warm_transfer')} className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
                   Mock Warm Transfer
+                </button>
+                <button onClick={() => triggerAction('direct_mail')} className="w-full bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 mt-4">
+                  Send Direct Mail
                 </button>
               </div>
             </div>

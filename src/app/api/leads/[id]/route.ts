@@ -12,6 +12,7 @@ export async function GET(
       where: { id: leadId },
       include: {
         agent: true,
+        activeWorkflow: true,
         activities: { orderBy: { createdAt: 'desc' } },
         scores: { orderBy: { createdAt: 'desc' } }
       }
