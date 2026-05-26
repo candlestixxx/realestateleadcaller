@@ -6,15 +6,17 @@ import Link from 'next/link';
 export default function DirectMailPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = async () => {
     try {
       const res = await fetch('/api/direct-mail');
+      if (!res.ok) throw new Error('Failed to fetch direct mail tasks');
       const data = await res.json();
       setTasks(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch tasks', error);
+    } catch (err: any) {
+      setError(err.message || 'An error occurred fetching tasks');
+    } finally {
       setLoading(false);
     }
   };
@@ -24,15 +26,17 @@ export default function DirectMailPage() {
   }, []);
 
   const markAsSent = async (taskId: string) => {
+    setError(null);
     try {
-      await fetch('/api/direct-mail', {
+      const res = await fetch('/api/direct-mail', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskId, status: 'Sent' })
       });
+      if (!res.ok) throw new Error('Failed to update task status');
       fetchTasks();
-    } catch (error) {
-      alert('Failed to update task');
+    } catch (err: any) {
+      setError(err.message || 'Failed to update task');
     }
   };
 
@@ -43,6 +47,12 @@ export default function DirectMailPage() {
           <h1 className="text-3xl font-bold text-gray-900">Direct Mail Tasks</h1>
           <Link href="/" className="text-blue-600 hover:underline">Back to Dashboard</Link>
         </header>
+
+        {error && (
+          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
 
         {loading ? (
           <p>Loading tasks...</p>

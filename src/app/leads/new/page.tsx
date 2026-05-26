@@ -14,10 +14,12 @@ export default function NewLeadPage() {
     lead_type: 'Buyer',
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',
@@ -25,9 +27,10 @@ export default function NewLeadPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create lead');
       router.push(`/leads/${data.id}`);
-    } catch (error) {
-      alert('Failed to create lead');
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
       setLoading(false);
     }
   };
@@ -43,6 +46,12 @@ export default function NewLeadPage() {
           <h1 className="text-3xl font-bold text-gray-900">Add New Lead</h1>
           <Link href="/leads" className="text-blue-600 hover:underline">Back to Leads</Link>
         </header>
+
+        {error && (
+          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
           <div className="grid grid-cols-2 gap-6">

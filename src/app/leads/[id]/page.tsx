@@ -71,7 +71,12 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 {lead.activeWorkflow && (
                   <div className="col-span-2 mt-2 p-3 bg-indigo-50 border border-indigo-100 rounded text-indigo-800">
                     <span className="font-semibold block mb-1">Active Workflow:</span>
-                    {lead.activeWorkflow.name} (Day {lead.currentWorkflowDay})
+                    <div className="flex items-center justify-between">
+                      <span>{lead.activeWorkflow.name}</span>
+                      <span className="bg-indigo-200 text-indigo-900 py-1 px-2 rounded-full text-xs font-bold">
+                        Day {lead.currentWorkflowDay}
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>

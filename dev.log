@@ -2,20 +2,17 @@
 > temp_app@0.1.0 dev
 > next dev
 
-⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
 ▲ Next.js 16.2.6 (Turbopack)
-- Local:         http://localhost:3001
-- Network:       http://192.168.0.2:3001
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
 - Environments: .env
-✓ Ready in 619ms
-⨯ Another next dev server is already running.
+✓ Ready in 588ms
 
-- Local:        http://localhost:3000
-- PID:  GET / 200 in 429ms (next.js: 151ms, application-code: 278ms)
- GET /api/dashboard 200 in 68ms (next.js: 42ms, application-code: 26ms)
- GET / 200 in 67ms (next.js: 6ms, application-code: 61ms)
- GET /api/dashboard 200 in 21ms (next.js: 4ms, application-code: 18ms)
- POST /api/webhooks/crm 201 in 25ms (next.js: 3ms, application-code: 22ms)
- GET /leads 200 in 117ms (next.js: 32ms, application-code: 85ms)
- GET /api/leads 200 in 64ms (next.js: 50ms, application-code: 14ms)
+ GET / 200 in 603ms (next.js: 338ms, application-code: 265ms)
+ GET /api/dashboard 200 in 240ms (next.js: 144ms, application-code: 96ms)
+ GET /leads 200 in 94ms (next.js: 25ms, application-code: 69ms)
+ GET /api/leads 200 in 80ms (next.js: 58ms, application-code: 22ms)
+ GET /leads/cmplv9jep000511wf5ole34hy 200 in 1049ms (next.js: 1002ms, application-code: 48ms)
+ GET /api/leads/cmplv9jep000511wf5ole34hy 200 in 1015ms (next.js: 1001ms, application-code: 15ms)
+ GET /api/leads/cmplv9jep000511wf5ole34hy 200 in 59ms (next.js: 41ms, application-code: 19ms)
 [?25h

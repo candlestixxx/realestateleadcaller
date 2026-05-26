@@ -6,14 +6,22 @@ import Link from 'next/link';
 export default function LeadsPage() {
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/leads')
-      .then(res => res.json())
-      .then(data => {
+    const loadLeads = async () => {
+      try {
+        const res = await fetch('/api/leads');
+        if (!res.ok) throw new Error('Failed to fetch leads');
+        const data = await res.json();
         setLeads(data);
+      } catch (err: any) {
+        setError(err.message || 'An error occurred while loading leads.');
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    loadLeads();
   }, []);
 
   return (
@@ -26,6 +34,12 @@ export default function LeadsPage() {
             <Link href="/leads/new" className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">Add New Lead</Link>
           </div>
         </header>
+
+        {error && (
+          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
 
         {loading ? (
           <p>Loading leads...</p>
