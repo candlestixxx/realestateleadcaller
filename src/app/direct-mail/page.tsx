@@ -22,7 +22,19 @@ export default function DirectMailPage() {
   };
 
   useEffect(() => {
-    fetchTasks();
+    const initFetch = async () => {
+      try {
+        const res = await fetch('/api/direct-mail');
+        if (!res.ok) throw new Error('Failed to fetch direct mail tasks');
+        const data = await res.json();
+        setTasks(data);
+      } catch (err: any) {
+        setError(err.message || 'An error occurred fetching tasks');
+      } finally {
+        setLoading(false);
+      }
+    };
+    initFetch();
   }, []);
 
   const markAsSent = async (taskId: string) => {

@@ -8,10 +8,20 @@ export default function LeadsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+
   useEffect(() => {
     const loadLeads = async () => {
+      setLoading(true);
       try {
-        const res = await fetch('/api/leads');
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (statusFilter) params.append('status', statusFilter);
+        if (typeFilter) params.append('type', typeFilter);
+
+        const res = await fetch(`/api/leads?${params.toString()}`);
         if (!res.ok) throw new Error('Failed to fetch leads');
         const data = await res.json();
         setLeads(data);
@@ -22,7 +32,7 @@ export default function LeadsPage() {
       }
     };
     loadLeads();
-  }, []);
+  }, [search, statusFilter, typeFilter]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -41,8 +51,39 @@ export default function LeadsPage() {
           </div>
         )}
 
+        <div className="mb-6 flex flex-col md:flex-row gap-4 bg-white p-4 rounded-lg shadow border border-gray-200">
+          <input
+            type="text"
+            placeholder="Search name, email, or phone..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+          >
+            <option value="">All Statuses</option>
+            <option value="New">New</option>
+            <option value="Warm Transfer Completed">Warm Transfer Completed</option>
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+          >
+            <option value="">All Types</option>
+            <option value="Buyer">Buyer</option>
+            <option value="Seller">Seller</option>
+            <option value="Circle Prospecting">Circle Prospecting</option>
+          </select>
+        </div>
+
         {loading ? (
           <p>Loading leads...</p>
+        ) : leads.length === 0 ? (
+          <p className="text-gray-500">No leads found matching your criteria.</p>
         ) : (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">

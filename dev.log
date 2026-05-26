@@ -2,17 +2,17 @@
 > temp_app@0.1.0 dev
 > next dev
 
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
 ▲ Next.js 16.2.6 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
 - Environments: .env
-✓ Ready in 588ms
+✓ Ready in 617ms
+⨯ Another next dev server is already running.
 
- GET / 200 in 603ms (next.js: 338ms, application-code: 265ms)
- GET /api/dashboard 200 in 240ms (next.js: 144ms, application-code: 96ms)
- GET /leads 200 in 94ms (next.js: 25ms, application-code: 69ms)
- GET /api/leads 200 in 80ms (next.js: 58ms, application-code: 22ms)
- GET /leads/cmplv9jep000511wf5ole34hy 200 in 1049ms (next.js: 1002ms, application-code: 48ms)
- GET /api/leads/cmplv9jep000511wf5ole34hy 200 in 1015ms (next.js: 1001ms, application-code: 15ms)
- GET /api/leads/cmplv9jep000511wf5ole34hy 200 in 59ms (next.js: 41ms, application-code: 19ms)
+- Local:        http://localhost:3 GET /leads 200 in 424ms (next.js: 142ms, application-code: 282ms)
+ GET /api/leads? 200 in 94ms (next.js: 71ms, application-code: 23ms)
+ GET /api/leads?search=Jane 200 in 20ms (next.js: 7ms, application-code: 13ms)
+ GET /api/leads? 200 in 14ms (next.js: 3ms, application-code: 11ms)
+ GET /api/leads?status=New 200 in 14ms (next.js: 4ms, application-code: 10ms)
 [?25h

@@ -1,9 +1,34 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search');
+    const status = searchParams.get('status');
+    const type = searchParams.get('type');
+
+    const whereClause: any = {};
+
+    if (search) {
+      whereClause.OR = [
+        { first_name: { contains: search } },
+        { last_name: { contains: search } },
+        { email: { contains: search } },
+        { phone: { contains: search } },
+      ];
+    }
+
+    if (status) {
+      whereClause.status = status;
+    }
+
+    if (type) {
+      whereClause.lead_type = type;
+    }
+
     const leads = await prisma.lead.findMany({
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
       include: { agent: true, activeWorkflow: true }
     });
