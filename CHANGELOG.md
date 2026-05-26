@@ -37,3 +37,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fix: Hoisted ES module imports in `src/lib/adapters/index.ts`.
 - Fix: Swapped `replace` for `replaceAll` in AI Script engine to correctly compile multiple instances of the same variable.
 - Fix: Inbound CRM Webhooks now assign leads to a default `userId` to prevent them from becoming orphaned in multi-tenant environments.
+- Phase 3 Advanced Automation: Scaffolded the Drag-and-Drop Visual Workflow Builder foundation (`src/app/workflows/builder`).
