@@ -1,20 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import Link from 'next/link';
 
-// Initial mock data for the builder
-const initialSteps = [
-  { id: 'step-1', day: 0, channel: 'Call', content: 'Immediate Double-Tap AI Call' },
-  { id: 'step-2', day: 0, channel: 'Email', content: 'Market Snapshot' },
-  { id: 'step-3', day: 1, channel: 'Call', content: 'Morning Check-in' },
-  { id: 'step-4', day: 2, channel: 'SMS', content: 'Soft Question Text' },
-];
-
 export default function WorkflowBuilderPage() {
-  const [steps, setSteps] = useState(initialSteps);
+  const [steps, setSteps] = useState<any[]>([]);
+  const [workflowId, setWorkflowId] = useState<string | null>(null);
+  const [workflowName, setWorkflowName] = useState('Loading Workflow...');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initData = async () => {
+      try {
+        const res = await fetch('/api/workflows');
+        if (res.ok) {
+          const data = await res.json();
+          // Load the first workflow for MVP demonstration
+          if (data && data.length > 0) {
+            setWorkflowId(data[0].id);
+            setWorkflowName(data[0].name);
+            setSteps(data[0].steps.map((s: any) => ({
+              ...s,
+              id: s.id || `temp-${Math.random()}`,
+              content: s.script || s.message || 'Action step'
+            })));
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load workflow data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    initData();
+  }, []);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -26,20 +47,38 @@ export default function WorkflowBuilderPage() {
     setSteps(newSteps);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!workflowId) return;
     setSaving(true);
-    // Mock save delay
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/workflows', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ workflowId, steps })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || 'Workflow saved successfully!');
+      } else {
+        alert('Failed to save workflow.');
+      }
+    } catch (e) {
+      alert('An error occurred while saving.');
+    } finally {
       setSaving(false);
-      alert('Workflow saved successfully! (Backend integration pending)');
-    }, 1000);
+    }
   };
+
+  if (loading) return <div className="p-8">Loading builder...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <header className="mb-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-900">Visual Workflow Builder</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Visual Workflow Builder</h1>
+            <p className="text-sm text-gray-500 mt-1">Editing: <span className="font-semibold text-indigo-600">{workflowName}</span></p>
+          </div>
           <div className="space-x-4">
             <Link href="/workflows" className="text-blue-600 hover:underline">Back to Workflows</Link>
             <button
