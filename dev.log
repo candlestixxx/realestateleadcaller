@@ -7,12 +7,10 @@
 - Local:         http://localhost:3001
 - Network:       http://192.168.0.2:3001
 - Environments: .env
-✓ Ready in GET /settings 200 in 1225ms (next.js: 870ms, application-code: 355ms)
- GET /settings/integrations 200 in 590ms (next.js: 532ms, application-code: 58ms)
- GET /settings/scripts 200 in 555ms (next.js: 510ms, application-code: 45ms)
- GET /leads 200 in 108ms (next.js: 27ms, application-code: 81ms)
- GET /api/leads? 200 in 137ms (next.js: 71ms, application-code: 66ms)
- GET /leads/import 200 in 566ms (next.js: 520ms, application-code: 46ms)
- POST /api/leads 201 in 34ms (next.js: 4ms, application-code: 30ms)
- POST /api/leads 201 in 21ms (next.js: 4ms, application-code: 17ms)
+✓ Ready in 6 GET /workflows 200 in 1253ms (next.js: 925ms, application-code: 327ms)
+ GET /api/workflows 200 in 26ms (next.js: 5ms, application-code: 21ms)
+[?25h
+  .next/dev/logs/next-development.log
+
+Run kill 412056 to stop it.
 [?25h

@@ -4,32 +4,26 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function WorkflowsPage() {
-  // Mock data for workflows based on the prompt
-  const workflows = [
-    {
-      id: 1,
-      name: 'Buyer 10-Day Blitz',
-      description: 'Aggressive 10-day follow up for new buyers',
-      steps: [
-        { day: 0, type: 'Call', content: 'Immediate Double-Tap AI Call' },
-        { day: 0, type: 'Email', content: 'Market Snapshot' },
-        { day: 1, type: 'Call', content: 'Morning Check-in' },
-        { day: 2, type: 'SMS', content: 'Soft Question Text' },
-        { day: 10, type: 'SMS', content: 'Break-up Text' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Seller 14-Day Follow-Up',
-      description: 'Follow-up sequence for new seller leads',
-      steps: [
-        { day: 1, type: 'Call', content: 'Immediate Call & SMS' },
-        { day: 2, type: 'SMS', content: 'Soft Question Text' },
-        { day: 3, type: 'Call', content: 'Second Call Attempt' },
-        { day: 14, type: 'Email', content: 'Break-up Email & Direct Mail Option' }
-      ]
-    }
-  ];
+  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchWorkflows = async () => {
+      try {
+        const res = await fetch('/api/workflows');
+        if (!res.ok) throw new Error('Failed to fetch workflows');
+        const data = await res.json();
+        setWorkflows(data);
+      } catch (err: any) {
+        setError(err.message || 'An error occurred fetching workflows');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkflows();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -39,6 +33,15 @@ export default function WorkflowsPage() {
           <Link href="/" className="text-blue-600 hover:underline">Back to Dashboard</Link>
         </header>
 
+        {error && (
+          <div className="mb-4 p-4 text-red-700 bg-red-100 rounded-md border border-red-200">
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <p>Loading workflows...</p>
+        ) : (
         <div className="space-y-8">
           {workflows.map(wf => (
             <div key={wf.id} className="bg-white shadow rounded-lg p-6 border border-gray-200">
@@ -46,17 +49,21 @@ export default function WorkflowsPage() {
               <p className="text-gray-600 mb-6">{wf.description}</p>
 
               <div className="relative border-l-2 border-blue-200 ml-3">
-                {wf.steps.map((step, idx) => (
+                {wf.steps.map((step: any, idx: number) => (
                   <div key={idx} className="mb-6 ml-6 relative">
                     <span className="absolute -left-9 top-1 bg-blue-500 w-4 h-4 rounded-full border-2 border-white"></span>
-                    <h3 className="font-semibold text-gray-900">Day {step.day} - {step.type}</h3>
-                    <p className="text-gray-500 text-sm">{step.content}</p>
+                    <h3 className="font-semibold text-gray-900">Day {step.day} - {step.channel}</h3>
+                    <p className="text-gray-500 text-sm">{step.script || step.message || ''}</p>
                   </div>
                 ))}
+                {wf.steps.length === 0 && (
+                  <p className="text-gray-500 text-sm ml-6 italic">No steps defined for this workflow yet.</p>
+                )}
               </div>
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );
