@@ -33,3 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Phase 1 Integration: Implemented `TwilioSmsProvider` adapter.
 - Phase 1 Integration: Implemented `SendGridEmailProvider` adapter.
 - Phase 1 Integration: Implemented `VapiVoiceProvider` adapter.
+- Phase 2 Security: Implemented Multi-Tenancy database isolation mapping Leads to individual Users.
+- Fix: Hoisted ES module imports in `src/lib/adapters/index.ts`.
+- Fix: Swapped `replace` for `replaceAll` in AI Script engine to correctly compile multiple instances of the same variable.
+- Fix: Inbound CRM Webhooks now assign leads to a default `userId` to prevent them from becoming orphaned in multi-tenant environments.

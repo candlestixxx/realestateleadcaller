@@ -14,7 +14,7 @@ export function compileScript(scriptTemplate: string, data: Record<string, strin
     matches.forEach(match => {
       const key = match.replace(/[{}]/g, '').trim();
       const value = data[key] || 'N/A';
-      compiled = compiled.replace(match, value);
+      compiled = compiled.replaceAll(match, value);
     });
   }
 

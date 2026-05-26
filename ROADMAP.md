@@ -7,7 +7,7 @@
 
 ## Phase 2: Security & Authentication
 - [x] Implement NextAuth for agent login.
-- [ ] Implement Row-Level Security / Multi-tenancy so multiple agents can use the platform without seeing each other's leads.
+- [x] Implement Row-Level Security / Multi-tenancy so multiple agents can use the platform without seeing each other's leads.
 
 ## Phase 3: Advanced Automation & MCP
 - [ ] Move the Workflow Engine to a dedicated task queue (e.g., BullMQ, Inngest) instead of a simple tick endpoint.

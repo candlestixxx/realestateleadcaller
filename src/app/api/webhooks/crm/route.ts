@@ -27,6 +27,9 @@ export async function POST(request: Request) {
       targetWorkflow = await prisma.followUpWorkflow.findFirst({ where: { name: 'Seller 14-Day Follow-Up' } });
     }
 
+    // Default to the first user in the system (the admin) to prevent orphaned leads
+    const defaultUser = await prisma.user.findFirst();
+
     const lead = await prisma.lead.create({
       data: {
         first_name: firstName,
@@ -36,6 +39,7 @@ export async function POST(request: Request) {
         lead_type: leadType,
         lead_source: body.source || 'CRM Webhook',
         status: 'New',
+        userId: defaultUser?.id,
         activeWorkflowId: targetWorkflow ? targetWorkflow.id : undefined,
         currentWorkflowDay: targetWorkflow ? 0 : undefined,
         next_follow_up_at: targetWorkflow ? new Date() : undefined,

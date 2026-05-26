@@ -15,6 +15,10 @@ export interface CrmProvider {
   updateLead(leadId: string, data: any): Promise<boolean>;
 }
 
+import sgMail from '@sendgrid/mail';
+import twilio from 'twilio';
+import { prisma } from '@/lib/prisma';
+
 export interface DirectMailProvider {
   createMailTask(leadId: string, campaignType: string): Promise<boolean>;
 }
@@ -92,8 +96,6 @@ export function getVoiceProvider(): VoiceProvider {
   return new VapiVoiceProvider();
 }
 
-import sgMail from '@sendgrid/mail';
-
 export class SendGridEmailProvider implements EmailProvider {
   async sendEmail(leadId: string, subject: string, body: string) {
     try {
@@ -165,9 +167,6 @@ export class MockSmsProvider implements SmsProvider {
     return true;
   }
 }
-
-import twilio from 'twilio';
-import { prisma } from '@/lib/prisma';
 
 export class TwilioSmsProvider implements SmsProvider {
   async sendText(leadId: string, message: string) {
