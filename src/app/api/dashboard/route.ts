@@ -29,6 +29,32 @@ export async function GET() {
       }
     });
 
+    // Fetch user's leads first since CallLog and Appointment don't have direct User relations yet
+    const userLeads = await prisma.lead.findMany({
+        where: { userId },
+        select: { id: true }
+    });
+    const userLeadIds = userLeads.map(l => l.id);
+
+    // Fetch Call Logs associated with the user's leads
+    const calls = await prisma.callLog.findMany({
+      where: {
+        leadId: { in: userLeadIds }
+      }
+    });
+
+    const totalCalls = calls.length;
+    // Consider a call "connected" if it lasted longer than 30 seconds
+    const connectedCalls = calls.filter(c => c.duration && c.duration > 30).length;
+    const connectRate = totalCalls > 0 ? ((connectedCalls / totalCalls) * 100).toFixed(1) : "0.0";
+
+    // Fetch Appointments set for the user's leads
+    const appointmentsSet = await prisma.appointment.count({
+      where: {
+        leadId: { in: userLeadIds }
+      }
+    });
+
     // KPI Metrics
     const conversionRate = totalLeads > 0 ? ((hotLeads / totalLeads) * 100).toFixed(1) : "0.0";
     const dncRate = totalLeads > 0 ? ((dncLeads / totalLeads) * 100).toFixed(1) : "0.0";
@@ -43,7 +69,8 @@ export async function GET() {
       overdueFollowUps,
       conversionRate,
       dncRate,
-      appointmentsSet: 0, // Pending phase 6 expansion
+      connectRate,
+      appointmentsSet,
       warmTransfersCompleted: 0,
     });
   } catch (error) {

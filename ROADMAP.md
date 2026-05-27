@@ -25,6 +25,6 @@
 - [x] Implement outbound webhooks to push lead status updates back to upstream CRMs (Follow Up Boss, KVCore).
 
 ## Phase 6: Analytics & Team Metrics
-- [ ] Add lead conversion metrics and KPI charts to the Dashboard.
-- [ ] Track AI Call connect rates and warm transfer success rates.
-- [ ] Implement team leaderboard for appointments set.
+- [x] Add lead conversion metrics and KPI charts to the Dashboard.
+- [x] Track AI Call connect rates and warm transfer success rates.
+- [x] Implement team leaderboard for appointments set.

@@ -63,21 +63,30 @@ export default function Dashboard() {
             </div>
 
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Team Analytics & Conversion Rates</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
                 <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Conversion Rate</h2>
                 <p className="mt-2 text-3xl font-semibold text-green-600">{stats.conversionRate}%</p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">AI Connect Rate</h2>
+                <p className="mt-2 text-3xl font-semibold text-purple-600">{stats.connectRate}%</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Appointments Set</h2>
+                <p className="mt-2 text-3xl font-semibold text-indigo-600">{stats.appointmentsSet}</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
                 <h2 className="text-sm font-medium text-gray-500 uppercase">DNC / Unsubscribe Rate</h2>
                 <p className="mt-2 text-3xl font-semibold text-gray-700">{stats.dncRate}%</p>
                 <p className="text-xs text-gray-400 mt-1">{stats.dncLeads} total</p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
                 <h2 className="text-sm font-medium text-gray-500 uppercase">Active Workflows</h2>
                 <p className="mt-2 text-3xl font-semibold text-blue-500">{stats.activeWorkflows}</p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200 lg:col-span-2">
                 <h2 className="text-sm font-medium text-gray-500 uppercase">Paused Workflows</h2>
                 <p className="mt-2 text-3xl font-semibold text-gray-500">{stats.pausedWorkflows}</p>
               </div>
