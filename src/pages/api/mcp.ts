@@ -31,6 +31,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           }
         },
       },
+      {
+        name: "check_agent_availability",
+        description: "Query the human real estate agent's calendar to check for available time slots before attempting to set a showing or appointment.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            date: { type: "string", description: "The requested date in YYYY-MM-DD format (e.g., '2026-05-25')" },
+          }
+        },
+      },
     ],
   };
 });
@@ -38,17 +48,43 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Handle tool execution
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "query_mls_inventory") {
-    // Mock MLS response logic for Phase 3 Foundation
-    const neighborhood = request.params.arguments?.neighborhood || "Unknown Area";
+    // Phase 10 Expanded Mock MLS response logic
+    const neighborhood = request.params.arguments?.neighborhood as string;
+    const zipcode = request.params.arguments?.zipcode as string;
+
+    let resultText = "No listings found for that criteria.";
+
+    if (neighborhood && neighborhood.toLowerCase() === "downtown") {
+        resultText = "Found 2 active listings in Downtown: 1: The Lofts at 1st St ($650k, 2bd/2ba). 2: Skyview Penthouse ($1.2M, 3bd/3ba).";
+    } else if (zipcode === "48044" || (neighborhood && neighborhood.toLowerCase().includes("macomb"))) {
+        resultText = "Found 3 active listings in Macomb (48044): 1: 123 Main St ($450k, 3bd/2ba). 2: 456 Elm St ($520k, 4bd/3ba). 3: 789 Oak Ave ($390k, 3bd/1ba).";
+    } else {
+        resultText = `Found 1 generic active listing in ${neighborhood || zipcode || 'the area'}: 999 Default Blvd ($350k, 2bd/1ba).`;
+    }
+
     return {
       content: [
         {
           type: "text",
-          text: `Found 3 active listings in ${neighborhood}. 1: 123 Main St ($450k). 2: 456 Elm St ($520k). 3: 789 Oak Ave ($390k).`
+          text: resultText
         }
       ]
     };
   }
+
+  if (request.params.name === "check_agent_availability") {
+    const date = request.params.arguments?.date || "today";
+    // Mock calendar response logic
+    return {
+      content: [
+        {
+          type: "text",
+          text: `On ${date}, the agent has the following open slots: 10:00 AM, 1:30 PM, and 4:15 PM.`
+        }
+      ]
+    };
+  }
+
   throw new Error("Tool not found");
 });
 

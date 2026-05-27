@@ -44,3 +44,7 @@
 ## Phase 9: Workflow Engine Transition
 - [x] Replace synchronous `/api/engine/tick` chron job with `inngest` background queue processing.
 - [x] Implement retry loops and step-delay mechanics via Inngest steps.
+
+## Phase 10: Model Context Protocol (MCP) Expansion
+- [x] Connect the MCP server to live/mock data tables.
+- [x] Add calendar availability capabilities to the MCP server.

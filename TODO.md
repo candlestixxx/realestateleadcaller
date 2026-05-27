@@ -1,11 +1,10 @@
 # TODO: Immediate Short-Term Tasks
 
-## Phase 9: Workflow Engine Transition (Inngest)
-- [x] Install `inngest` via npm.
-- [x] Create `src/app/api/inngest/route.ts` to expose the Inngest API endpoint.
-- [x] Create `src/inngest/client.ts` for initialization.
-- [x] Create `src/inngest/functions.ts` to house the `processWorkflowTick` background job (migrating logic from `/api/engine/tick`).
-- [x] Modify `src/app/api/engine/tick/route.ts` to dispatch an event rather than processing everything synchronously.
+## Phase 10: Model Context Protocol (MCP) Expansion
+- [x] Connect the `query_mls_inventory` tool in `src/pages/api/mcp.ts` to a mock database of active listings instead of hardcoded strings.
+- [x] Add an `agent_availability` tool to the MCP server to check calendar slots before setting an appointment.
 
-## Project Tech Debt
-- [ ] Migrate final `any` types out of the `inngest` logic mapped functions.
+## Project Finalization
+- [x] Record learnings to memory.
+- [x] Summarize current state in `HANDOFF.md` for successive models.
+- [x] Perform final build and lint check.
