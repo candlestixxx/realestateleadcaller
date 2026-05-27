@@ -33,3 +33,10 @@
 - [x] Add explicit Prisma `@relation` fields to `CallLog` and `Appointment` models.
 - [x] Review all components for `any` type overrides and ensure strict TypeScript typing.
 - [x] Ensure 100% of standard user forms (login, settings, workflow builder) handle loading/error states properly.
+
+## Phase 8: Post-Call Intelligence (Vapi Webhook)
+- [ ] Implement `/api/webhooks/vapi` to listen for "EndOfCallReport".
+- [ ] Parse transcript and summary to extract Call Duration, Outcome, and Next Steps.
+- [ ] Save transcript to the `Conversation` database model.
+- [ ] Create/Update `CallLog` database model.
+- [ ] Automatically score the lead based on post-call LLM analysis.
