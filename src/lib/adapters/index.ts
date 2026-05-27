@@ -199,7 +199,8 @@ export class VapiVoiceProvider implements VoiceProvider {
           assistantOverrides: {
             systemPrompt: `You are Jules, an AI real estate assistant. ${knowledgeContext}`,
             variableValues: {
-              leadId: lead.id
+              leadId: lead.id,
+              userId: lead.userId || "mock_user"
             }
           },
           assistantId: 'your-vapi-assistant-id', // Assuming static or from settings

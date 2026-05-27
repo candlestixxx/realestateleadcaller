@@ -2,6 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 // Initialize the MCP Server globally
 const server = new Server(
@@ -38,6 +41,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             date: { type: "string", description: "The requested date in YYYY-MM-DD format (e.g., '2026-05-25')" },
+            userId: { type: "string", description: "The internal ID of the agent whose calendar we are querying." }
           }
         },
       },
@@ -73,16 +77,79 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   if (request.params.name === "check_agent_availability") {
-    const date = request.params.arguments?.date || "today";
-    // Mock calendar response logic
-    return {
-      content: [
-        {
-          type: "text",
-          text: `On ${date}, the agent has the following open slots: 10:00 AM, 1:30 PM, and 4:15 PM.`
+    const date = request.params.arguments?.date as string || "today";
+    const userId = request.params.arguments?.userId as string;
+
+    if (!userId) {
+        return {
+            content: [{ type: "text", text: "Error: Missing agent userId required to check calendar." }]
+        };
+    }
+
+    try {
+        const settings = await prisma.integrationSettings.findFirst({
+            where: { provider: 'google_calendar_token', userId }
+        });
+
+        const token = settings?.apiKey;
+
+        if (!token) {
+            // Fallback to mock logic if no real integration exists
+            return {
+                content: [{ type: "text", text: `On ${date}, the agent has the following open slots: 10:00 AM, 1:30 PM, and 4:15 PM.` }]
+            };
         }
-      ]
-    };
+
+        // Parse date for start/end of day constraints
+        const targetDate = new Date(date === "today" ? Date.now() : date);
+        const timeMin = new Date(targetDate.setHours(8, 0, 0, 0)).toISOString(); // 8 AM
+        const timeMax = new Date(targetDate.setHours(18, 0, 0, 0)).toISOString(); // 6 PM
+
+        // Real Google API Free/Busy Query
+        const response = await fetch('https://www.googleapis.com/calendar/v3/freeBusy', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              timeMin,
+              timeMax,
+              items: [{ id: 'primary' }]
+            }),
+        });
+
+        if (!response.ok) {
+             return {
+                content: [{ type: "text", text: `Error: Unable to access calendar at this time. (API returned ${response.status})` }]
+            };
+        }
+
+        const data = await response.json();
+        const busySlots = data.calendars?.primary?.busy || [];
+
+        if (busySlots.length === 0) {
+             return {
+                content: [{ type: "text", text: `The agent is completely free on ${date} between 8 AM and 6 PM.` }]
+            };
+        }
+
+        const busyText = busySlots.map((slot: any) => `- ${new Date(slot.start).toLocaleTimeString()} to ${new Date(slot.end).toLocaleTimeString()}`).join("\n");
+
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `On ${date}, the agent is currently busy during these times:\n${busyText}\n\nYou may offer any other time slot between 8 AM and 6 PM.`
+                }
+            ]
+        };
+
+    } catch (e) {
+        return {
+            content: [{ type: "text", text: `Error checking calendar.` }]
+        };
+    }
   }
 
   throw new Error("Tool not found");

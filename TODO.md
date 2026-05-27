@@ -1,9 +1,9 @@
 # TODO: Immediate Short-Term Tasks
 
-## Final Review
-- [x] Record learnings to memory.
+## Phase 13: Live MCP Capabilities
+- [x] Write logic in `src/pages/api/mcp.ts` to fetch `google_calendar_token` from `IntegrationSettings`.
+- [x] Query `https://www.googleapis.com/calendar/v3/calendars/primary/freeBusy` in the MCP Server endpoint instead of returning static available times.
 
-## Completed Tasks
-- [x] Connect the `CalendarProvider` to the Google Calendar API.
-- [x] Expand the `POST /api/webhooks/vapi/route.ts` to automatically schedule a meeting if the AI successfully extracts a datetime from the transcript.
-- [x] Render upcoming `Appointments` on the main Dashboard.
+## Final Review
+- [ ] Record learnings to memory.
+- [ ] Hand off codebase cleanly.
