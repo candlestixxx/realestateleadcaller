@@ -30,6 +30,6 @@
 - [x] Implement team leaderboard for appointments set.
 
 ## Phase 7: Polish & Tech Debt
-- [ ] Add explicit Prisma `@relation` fields to `CallLog` and `Appointment` models.
+- [x] Add explicit Prisma `@relation` fields to `CallLog` and `Appointment` models.
 - [ ] Review all components for `any` type overrides and ensure strict TypeScript typing.
 - [ ] Ensure 100% of standard user forms (login, settings, workflow builder) handle loading/error states properly.

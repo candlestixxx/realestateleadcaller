@@ -11,13 +11,14 @@ export interface EmailProvider {
   sendEmail(leadId: string, subject: string, body: string): Promise<boolean>;
 }
 
-export interface CrmProvider {
-  updateLead(leadId: string, data: any): Promise<boolean>;
-}
-
 import sgMail from '@sendgrid/mail';
 import twilio from 'twilio';
 import { prisma } from '@/lib/prisma';
+import { Lead } from '@prisma/client';
+
+export interface CrmProvider {
+  updateLead(leadId: string, data: Partial<Lead>): Promise<boolean>;
+}
 
 export interface DirectMailProvider {
   createMailTask(leadId: string, campaignType: string): Promise<boolean>;
@@ -235,7 +236,7 @@ export class MockEmailProvider implements EmailProvider {
 }
 
 export class MockCrmProvider implements CrmProvider {
-  async updateLead(leadId: string, data: any) {
+  async updateLead(leadId: string, data: Partial<Lead>) {
     console.log(`Mock: Updating lead ${leadId} in CRM with data:`, data);
     return true;
   }

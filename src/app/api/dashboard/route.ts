@@ -6,10 +6,9 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    const user = session?.user as any;
-    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const userId = user.id;
+    const userId = session.user.id;
 
     const totalLeads = await prisma.lead.count({ where: { userId } });
     const newLeads = await prisma.lead.count({ where: { userId, status: 'New' } });

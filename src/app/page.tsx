@@ -3,8 +3,23 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+type DashboardStats = {
+  totalLeads: number;
+  newLeads: number;
+  hotLeads: number;
+  dncLeads: number;
+  activeWorkflows: number;
+  pausedWorkflows: number;
+  overdueFollowUps: number;
+  conversionRate: string;
+  dncRate: string;
+  connectRate: string;
+  appointmentsSet: number;
+  warmTransfersCompleted: number;
+};
+
 export default function Dashboard() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   const loadStats = () => {
     fetch('/api/dashboard')
