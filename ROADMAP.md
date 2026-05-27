@@ -18,8 +18,8 @@
 - [x] Implement Inbound SMS webhook handlers to receive lead replies.
 - [x] Build LLM-powered Sentiment & Intent Analysis for inbound messages.
 - [x] Auto-pause active follow-up workflows if a user replies.
-- [ ] Implement Inbound Email webhook handlers to receive lead email replies.
-- [ ] Develop a Knowledge Base module to allow the AI to answer specific FAQs about the team and listings.
+- [x] Implement Inbound Email webhook handlers to receive lead email replies.
+- [x] Develop a Knowledge Base module to allow the AI to answer specific FAQs about the team and listings.
 
 ## Phase 5: Outbound Integrations
 - [x] Implement outbound webhooks to push lead status updates back to upstream CRMs (Follow Up Boss, KVCore).
