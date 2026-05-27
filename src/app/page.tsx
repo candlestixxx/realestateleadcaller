@@ -41,32 +41,48 @@ export default function Dashboard() {
         </header>
 
         {stats ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">Total Leads</h2>
-              <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalLeads}</p>
+          <>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Pipeline Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Total Leads</h2>
+                <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalLeads}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">New / Uncontacted</h2>
+                <p className="mt-2 text-3xl font-semibold text-blue-600">{stats.newLeads}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Leads</h2>
+                <p className="mt-2 text-3xl font-semibold text-red-600">{stats.hotLeads}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Overdue Follow-ups</h2>
+                <p className="mt-2 text-3xl font-semibold text-orange-500">{stats.overdueFollowUps}</p>
+              </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">New Leads Today</h2>
-              <p className="mt-2 text-3xl font-semibold text-blue-600">{stats.newLeads}</p>
+
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Team Analytics & Conversion Rates</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Conversion Rate</h2>
+                <p className="mt-2 text-3xl font-semibold text-green-600">{stats.conversionRate}%</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">DNC / Unsubscribe Rate</h2>
+                <p className="mt-2 text-3xl font-semibold text-gray-700">{stats.dncRate}%</p>
+                <p className="text-xs text-gray-400 mt-1">{stats.dncLeads} total</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Active Workflows</h2>
+                <p className="mt-2 text-3xl font-semibold text-blue-500">{stats.activeWorkflows}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Paused Workflows</h2>
+                <p className="mt-2 text-3xl font-semibold text-gray-500">{stats.pausedWorkflows}</p>
+              </div>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Leads</h2>
-              <p className="mt-2 text-3xl font-semibold text-red-600">{stats.hotLeads}</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">Overdue Follow-ups</h2>
-              <p className="mt-2 text-3xl font-semibold text-orange-500">{stats.overdueFollowUps}</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">Appointments Set</h2>
-              <p className="mt-2 text-3xl font-semibold text-green-600">{stats.appointmentsSet}</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-              <h2 className="text-sm font-medium text-gray-500 uppercase">Warm Transfers</h2>
-              <p className="mt-2 text-3xl font-semibold text-purple-600">{stats.warmTransfersCompleted}</p>
-            </div>
-          </div>
+          </>
         ) : (
           <p>Loading stats...</p>
         )}
