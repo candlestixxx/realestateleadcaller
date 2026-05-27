@@ -19,10 +19,6 @@ export default function KnowledgeBasePage() {
   const [category, setCategory] = useState('General');
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    fetchSnippets();
-  }, []);
-
   const fetchSnippets = async () => {
     try {
       const res = await fetch('/api/settings/knowledge');
@@ -35,6 +31,10 @@ export default function KnowledgeBasePage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchSnippets();
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

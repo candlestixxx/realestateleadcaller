@@ -29,17 +29,10 @@ export async function GET() {
       }
     });
 
-    // Fetch user's leads first since CallLog and Appointment don't have direct User relations yet
-    const userLeads = await prisma.lead.findMany({
-        where: { userId },
-        select: { id: true }
-    });
-    const userLeadIds = userLeads.map(l => l.id);
-
-    // Fetch Call Logs associated with the user's leads
+    // Fetch Call Logs associated with the user's leads via direct relation
     const calls = await prisma.callLog.findMany({
       where: {
-        leadId: { in: userLeadIds }
+        lead: { userId }
       }
     });
 
@@ -48,10 +41,10 @@ export async function GET() {
     const connectedCalls = calls.filter(c => c.duration && c.duration > 30).length;
     const connectRate = totalCalls > 0 ? ((connectedCalls / totalCalls) * 100).toFixed(1) : "0.0";
 
-    // Fetch Appointments set for the user's leads
+    // Fetch Appointments set for the user's leads via direct relation
     const appointmentsSet = await prisma.appointment.count({
       where: {
-        leadId: { in: userLeadIds }
+        lead: { userId }
       }
     });
 
