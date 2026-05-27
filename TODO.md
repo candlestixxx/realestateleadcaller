@@ -1,12 +1,11 @@
 # TODO: Immediate Short-Term Tasks
 
-## Phase 8: Vapi Post-Call Intelligence
-- [ ] Create `src/app/api/webhooks/vapi/route.ts` endpoint.
-- [ ] Map the Vapi `EndOfCallReport` JSON payload (Duration, Transcript, Summary) to our local Prisma schema (`CallLog` and `Conversation`).
-- [ ] Write logic to increment the Lead's `urgency_score` automatically if the call outcome was positive.
+## Phase 9: Workflow Engine Transition (Inngest)
+- [x] Install `inngest` via npm.
+- [x] Create `src/app/api/inngest/route.ts` to expose the Inngest API endpoint.
+- [x] Create `src/inngest/client.ts` for initialization.
+- [x] Create `src/inngest/functions.ts` to house the `processWorkflowTick` background job (migrating logic from `/api/engine/tick`).
+- [x] Modify `src/app/api/engine/tick/route.ts` to dispatch an event rather than processing everything synchronously.
 
-## Completed Tasks
-- [x] Replace `any` types in NextAuth session overriding (`src/app/api/auth/[...nextauth]/route.ts`).
-- [x] Replace `any` types in `src/lib/adapters/index.ts`.
-- [x] Add explicit Prisma `@relation` fields to `CallLog` and `Appointment` models to map to `Lead` directly.
-- [x] Refactor `src/app/api/dashboard/route.ts` to utilize the new direct relations for faster counting.
+## Project Tech Debt
+- [ ] Migrate final `any` types out of the `inngest` logic mapped functions.

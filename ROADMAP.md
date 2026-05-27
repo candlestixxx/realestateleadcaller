@@ -35,8 +35,12 @@
 - [x] Ensure 100% of standard user forms (login, settings, workflow builder) handle loading/error states properly.
 
 ## Phase 8: Post-Call Intelligence (Vapi Webhook)
-- [ ] Implement `/api/webhooks/vapi` to listen for "EndOfCallReport".
-- [ ] Parse transcript and summary to extract Call Duration, Outcome, and Next Steps.
-- [ ] Save transcript to the `Conversation` database model.
-- [ ] Create/Update `CallLog` database model.
-- [ ] Automatically score the lead based on post-call LLM analysis.
+- [x] Implement `/api/webhooks/vapi` to listen for "EndOfCallReport".
+- [x] Parse transcript and summary to extract Call Duration, Outcome, and Next Steps.
+- [x] Save transcript to the `Conversation` database model.
+- [x] Create/Update `CallLog` database model.
+- [x] Automatically score the lead based on post-call LLM analysis.
+
+## Phase 9: Workflow Engine Transition
+- [x] Replace synchronous `/api/engine/tick` chron job with `inngest` background queue processing.
+- [x] Implement retry loops and step-delay mechanics via Inngest steps.
