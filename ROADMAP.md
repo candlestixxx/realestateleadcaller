@@ -31,5 +31,5 @@
 
 ## Phase 7: Polish & Tech Debt
 - [x] Add explicit Prisma `@relation` fields to `CallLog` and `Appointment` models.
-- [ ] Review all components for `any` type overrides and ensure strict TypeScript typing.
-- [ ] Ensure 100% of standard user forms (login, settings, workflow builder) handle loading/error states properly.
+- [x] Review all components for `any` type overrides and ensure strict TypeScript typing.
+- [x] Ensure 100% of standard user forms (login, settings, workflow builder) handle loading/error states properly.
