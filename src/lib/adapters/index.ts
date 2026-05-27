@@ -43,6 +43,118 @@ export class MockVoiceProvider implements VoiceProvider {
   }
 }
 
+export class GoogleCalendarProvider implements CalendarProvider {
+  async createAppointment(leadId: string, date: Date) {
+    try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead) throw new Error('Lead not found');
+
+      const settings = await prisma.integrationSettings.findFirst({
+        where: { provider: 'google_calendar_token', userId: lead.userId || undefined }
+      });
+      const token = settings?.apiKey;
+
+      if (!token) {
+        console.warn('Google Calendar token missing, falling back to mock provider');
+        return new MockCalendarProvider().createAppointment(leadId, date);
+      }
+
+      // Mock integration for Google Calendar (would use googleapis package in production)
+      // e.g. calendar.events.insert({ ... })
+      const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          summary: `Showing / Meeting with ${lead.first_name} ${lead.last_name}`,
+          description: `Automatically scheduled by Jules AI.\nPhone: ${lead.phone}\nEmail: ${lead.email}`,
+          start: {
+            dateTime: date.toISOString(),
+          },
+          end: {
+            // Assume 1 hour meeting duration
+            dateTime: new Date(date.getTime() + 60 * 60 * 1000).toISOString()
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`Google Calendar API error: ${response.statusText}`);
+        return false;
+      }
+
+      console.log(`Google Calendar: Successfully created appointment for ${lead.first_name} at ${date}`);
+      return true;
+    } catch (e) {
+      console.error('Google Calendar Error:', e);
+      return false;
+    }
+  }
+}
+
+export function getCalendarProvider(): CalendarProvider {
+  return new GoogleCalendarProvider();
+}
+
+export class LobDirectMailProvider implements DirectMailProvider {
+  async createMailTask(leadId: string, campaignType: string) {
+    try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.property_address || !lead.city || !lead.state || !lead.zip) {
+        throw new Error('Lead missing complete mailing address fields');
+      }
+
+      const settings = await prisma.integrationSettings.findFirst({
+        where: { provider: 'lob_api_key', userId: lead.userId || undefined }
+      });
+      const lobKey = settings?.apiKey;
+
+      if (!lobKey) {
+        console.warn('Lob API key missing, falling back to mock provider');
+        return new MockDirectMailProvider().createMailTask(leadId, campaignType);
+      }
+
+      const authHeader = 'Basic ' + Buffer.from(`${lobKey}:`).toString('base64');
+
+      const response = await fetch('https://api.lob.com/v1/postcards', {
+        method: 'POST',
+        headers: {
+          'Authorization': authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: `Campaign: ${campaignType}`,
+          to: {
+            name: `${lead.first_name} ${lead.last_name}`,
+            address_line1: lead.property_address,
+            address_city: lead.city,
+            address_state: lead.state,
+            address_zip: lead.zip
+          },
+          // Mock HTML template for Lob
+          front: "<html><body><h1>Exclusive Home Value Report for {{name}}</h1></body></html>",
+          back: "<html><body><h1>Contact Jules Real Estate today!</h1></body></html>",
+          merge_variables: {
+            name: lead.first_name
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lob API error: ${response.status} ${response.statusText}`);
+      }
+
+      console.log(`Lob: Successfully dispatched ${campaignType} postcard to ${lead.property_address}`);
+      return true;
+    } catch (e) {
+      console.error('Lob Direct Mail Error:', e);
+      return false;
+    }
+  }
+}
+
 export { getCrmProvider } from './crmOutbound';
 
 export class VapiVoiceProvider implements VoiceProvider {

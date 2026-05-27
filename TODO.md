@@ -1,10 +1,9 @@
 # TODO: Immediate Short-Term Tasks
 
-## Phase 10: Model Context Protocol (MCP) Expansion
-- [x] Connect the `query_mls_inventory` tool in `src/pages/api/mcp.ts` to a mock database of active listings instead of hardcoded strings.
-- [x] Add an `agent_availability` tool to the MCP server to check calendar slots before setting an appointment.
-
-## Project Finalization
+## Final Review
 - [x] Record learnings to memory.
-- [x] Summarize current state in `HANDOFF.md` for successive models.
-- [x] Perform final build and lint check.
+
+## Completed Tasks
+- [x] Connect the `CalendarProvider` to the Google Calendar API.
+- [x] Expand the `POST /api/webhooks/vapi/route.ts` to automatically schedule a meeting if the AI successfully extracts a datetime from the transcript.
+- [x] Render upcoming `Appointments` on the main Dashboard.

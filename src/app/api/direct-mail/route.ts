@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockDirectMailProvider } from '@/lib/adapters';
+import { LobDirectMailProvider } from '@/lib/adapters';
 
 export async function GET() {
   try {
@@ -21,14 +21,14 @@ export async function POST(request: Request) {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
 
-    const directMail = new MockDirectMailProvider();
-    await directMail.createMailTask(leadId, campaignType);
+    const directMail = new LobDirectMailProvider();
+    const success = await directMail.createMailTask(leadId, campaignType);
 
     const task = await prisma.directMailTask.create({
       data: {
         leadId,
         campaignType,
-        status: 'Pending',
+        status: success ? 'Dispatched' : 'Failed',
       }
     });
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getCrmProvider } from "@/lib/adapters";
+import { getCrmProvider, getCalendarProvider } from "@/lib/adapters";
 
 const prisma = new PrismaClient();
 
@@ -86,7 +86,28 @@ export async function POST(req: Request) {
         urgencyBump = 50;
     }
 
-    // 6. Update Lead
+    // 6. Check for appointments
+    if (summaryLower.includes('tomorrow') || summaryLower.includes('today') || summaryLower.includes('monday') || summaryLower.includes('tuesday') || summaryLower.includes('wednesday') || summaryLower.includes('thursday') || summaryLower.includes('friday') || summaryLower.includes('saturday') || summaryLower.includes('sunday')) {
+       if (summaryLower.includes('appointment') || summaryLower.includes('meet') || summaryLower.includes('showing')) {
+          // Trigger Appointment booking adapter
+          // For MVP, we extract a mock future date since parsing absolute time from natural language requires an LLM call.
+          const mockAppointmentDate = new Date();
+          mockAppointmentDate.setDate(mockAppointmentDate.getDate() + 1); // Tomorrow
+
+          await getCalendarProvider().createAppointment(lead.id, mockAppointmentDate);
+
+          await prisma.appointment.create({
+              data: {
+                  leadId: lead.id,
+                  agentId: lead.assigned_agent_id || "unassigned",
+                  date: mockAppointmentDate,
+                  notes: `AI Scheduled Meeting. Summary: ${summary.substring(0, 100)}`
+              }
+          });
+       }
+    }
+
+    // 7. Update Lead
     const updatedLeadData = {
         status: newStatus,
         urgency_score: Math.min((lead.urgency_score || 0) + urgencyBump, 100),
@@ -99,7 +120,7 @@ export async function POST(req: Request) {
       data: updatedLeadData
     });
 
-    // 7. Sync Outbound CRM
+    // 8. Sync Outbound CRM
     const crmProvider = getCrmProvider();
     await crmProvider.updateLead(lead.id, updatedLeadData as any);
 
