@@ -12,8 +12,11 @@ export async function GET() {
 
     const totalLeads = await prisma.lead.count({ where: { userId } });
     const newLeads = await prisma.lead.count({ where: { userId, status: 'New' } });
+    const contactedLeads = await prisma.lead.count({ where: { userId, status: 'Contacted' } });
+    const nurtureLeads = await prisma.lead.count({ where: { userId, status: 'Nurture' } });
     const hotLeads = await prisma.lead.count({ where: { userId, status: 'Hot Lead' } });
     const dncLeads = await prisma.lead.count({ where: { userId, status: 'Do Not Contact' } });
+    const closedLeads = await prisma.lead.count({ where: { userId, status: 'Closed/Archived' } });
 
     // Active vs Paused/Null workflows
     const activeWorkflows = await prisma.lead.count({ where: { userId, activeWorkflowId: { not: null } } });
@@ -51,6 +54,15 @@ export async function GET() {
     const conversionRate = totalLeads > 0 ? ((hotLeads / totalLeads) * 100).toFixed(1) : "0.0";
     const dncRate = totalLeads > 0 ? ((dncLeads / totalLeads) * 100).toFixed(1) : "0.0";
 
+    const chartData = [
+        { name: 'New', value: newLeads },
+        { name: 'Contacted', value: contactedLeads },
+        { name: 'Nurturing', value: nurtureLeads },
+        { name: 'Hot', value: hotLeads },
+        { name: 'DNC', value: dncLeads },
+        { name: 'Closed', value: closedLeads }
+    ];
+
     return NextResponse.json({
       totalLeads,
       newLeads,
@@ -63,6 +75,7 @@ export async function GET() {
       dncRate,
       connectRate,
       appointmentsSet,
+      chartData,
       warmTransfersCompleted: 0,
     });
   } catch (error) {
