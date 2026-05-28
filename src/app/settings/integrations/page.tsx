@@ -12,8 +12,6 @@ export default function IntegrationsSettingsPage() {
   const [googleCalendarToken, setGoogleCalendarToken] = useState('');
   const [fubApiKey, setFubApiKey] = useState('');
   const [openaiApiKey, setOpenaiApiKey] = useState('');
-  const [vapiAssistantId, setVapiAssistantId] = useState('');
-  const [vapiAssistantsList, setVapiAssistantsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -34,17 +32,8 @@ export default function IntegrationsSettingsPage() {
             if (setting.provider === 'google_calendar_token') setGoogleCalendarToken(setting.apiKey);
             if (setting.provider === 'fub_api_key') setFubApiKey(setting.apiKey);
             if (setting.provider === 'openai_api_key') setOpenaiApiKey(setting.apiKey);
-            if (setting.provider === 'vapi_assistant_id') setVapiAssistantId(setting.apiKey);
           });
         }
-
-        // Fetch Vapi Assistants if configured
-        const vapiRes = await fetch('/api/settings/vapi-assistants');
-        if (vapiRes.ok) {
-            const vapiData = await vapiRes.json();
-            if (vapiData.assistants) setVapiAssistantsList(vapiData.assistants);
-        }
-
       } catch (err) {
         console.error('Failed to load settings');
       } finally {
@@ -114,30 +103,6 @@ export default function IntegrationsSettingsPage() {
               Save
             </button>
           </div>
-
-          {vapiAssistantsList.length > 0 && (
-              <div className="mt-4 flex items-center space-x-4">
-                  <select
-                      value={vapiAssistantId}
-                      onChange={(e) => setVapiAssistantId(e.target.value)}
-                      className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm bg-white"
-                  >
-                      <option value="">-- Select Voice Assistant --</option>
-                      {vapiAssistantsList.map(ast => (
-                          <option key={ast.id} value={ast.id}>
-                              {ast.name || ast.id}
-                          </option>
-                      ))}
-                  </select>
-                  <button
-                    onClick={() => handleSave('vapi_assistant_id', vapiAssistantId)}
-                    disabled={saving}
-                    className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    Save Assistant Map
-                  </button>
-              </div>
-          )}
         </div>
 
         <hr className="border-gray-200" />

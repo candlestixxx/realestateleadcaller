@@ -175,7 +175,7 @@ export class VapiVoiceProvider implements VoiceProvider {
       }
 
       if (!vapiAssistantId) {
-        console.warn('Vapi Assistant ID not configured, falling back to mock provider');
+        console.warn('Vapi Assistant ID missing, falling back to mock provider');
         return new MockVoiceProvider().callLead(leadId);
       }
 
@@ -207,7 +207,29 @@ export class VapiVoiceProvider implements VoiceProvider {
             variableValues: {
               leadId: lead.id,
               userId: lead.userId || "mock_user"
-            }
+            },
+            clientMessages: ["tool-calls"],
+            serverMessages: ["tool-calls", "end-of-call-report"],
+            serverUrl: "https://your-production-url.com/api/webhooks/vapi-tools",
+            tools: [
+              {
+                type: "function",
+                function: {
+                  name: "book_appointment",
+                  description: "Book an appointment or showing on the agent's calendar. Call this ONLY after checking agent availability and agreeing on a time with the user.",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      datetime: {
+                        type: "string",
+                        description: "The ISO 8601 string of the date and time to book (e.g., '2026-05-25T14:30:00Z')"
+                      }
+                    },
+                    required: ["datetime"]
+                  }
+                }
+              }
+            ]
           },
           assistantId: vapiAssistantId,
         }),

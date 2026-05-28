@@ -1,9 +1,9 @@
 # TODO: Immediate Short-Term Tasks
 
-## Phase 16: Vapi Assistant Provisioning UI
-- [x] Create an API integration to automatically fetch available Vapi Assistants (`src/app/api/settings/vapi-assistants/route.ts`).
-- [x] Create a UI in the Integrations Settings to allow the agent to select which Assistant ID they want to map to their team.
-- [x] Use dynamic Assistant ID in Voice provider.
+## Phase 17: UI Refinements
+- [ ] Add loading skeletons and error boundary components to improve React rendering UX.
+- [ ] Address non-critical `any` type warnings flagged during build.
 
-## Final Review
-- [ ] Record learnings to memory.
+## Completed Tasks
+- [x] Connect Vapi's `CallTool` function execution endpoint (`/api/webhooks/vapi-tools/route.ts`) to mirror our MCP capabilities.
+- [x] Allow the Voice AI to directly trigger the `getCalendarProvider` to book a showing *during* the call, instead of waiting for the EndOfCall summary.
