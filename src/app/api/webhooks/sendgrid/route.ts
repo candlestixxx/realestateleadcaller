@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     });
 
     // 2. Perform Sentiment & Intent Analysis
-    const analysis = await SentimentAnalyzer.analyze(bodyText);
+    const analysis = await SentimentAnalyzer.analyze(bodyText, lead.userId || undefined);
 
     let newStatus = lead.status;
 

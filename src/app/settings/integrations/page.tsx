@@ -11,6 +11,7 @@ export default function IntegrationsSettingsPage() {
   const [lobApiKey, setLobApiKey] = useState('');
   const [googleCalendarToken, setGoogleCalendarToken] = useState('');
   const [fubApiKey, setFubApiKey] = useState('');
+  const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export default function IntegrationsSettingsPage() {
             if (setting.provider === 'lob_api_key') setLobApiKey(setting.apiKey);
             if (setting.provider === 'google_calendar_token') setGoogleCalendarToken(setting.apiKey);
             if (setting.provider === 'fub_api_key') setFubApiKey(setting.apiKey);
+            if (setting.provider === 'openai_api_key') setOpenaiApiKey(setting.apiKey);
           });
         }
       } catch (err) {
@@ -238,6 +240,29 @@ export default function IntegrationsSettingsPage() {
             />
             <button
               onClick={() => handleSave('fub_api_key', fubApiKey)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">OpenAI Configuration</h2>
+          <p className="text-sm text-gray-500 mb-4">Enable true LLM natural language parsing for incoming text messages and emails (uses gpt-4o-mini).</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="password"
+              placeholder="sk-proj-..."
+              value={openaiApiKey}
+              onChange={(e) => setOpenaiApiKey(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('openai_api_key', openaiApiKey)}
               disabled={saving}
               className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
             >
