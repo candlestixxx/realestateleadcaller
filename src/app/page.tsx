@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 type DashboardStats = {
   totalLeads: number;
@@ -17,10 +16,7 @@ type DashboardStats = {
   connectRate: string;
   appointmentsSet: number;
   warmTransfersCompleted: number;
-  chartData: { name: string, value: number }[];
 };
-
-const CHART_COLORS = ['#3B82F6', '#8B5CF6', '#6366F1', '#EF4444', '#6B7280', '#10B981'];
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -61,47 +57,23 @@ export default function Dashboard() {
 
         {stats ? (
           <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-              <div className="lg:col-span-1 space-y-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Pipeline Overview</h2>
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h2 className="text-sm font-medium text-gray-500 uppercase">Total Leads</h2>
-                  <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalLeads}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h2 className="text-sm font-medium text-gray-500 uppercase">New / Uncontacted</h2>
-                  <p className="mt-2 text-3xl font-semibold text-blue-600">{stats.newLeads}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Leads</h2>
-                  <p className="mt-2 text-3xl font-semibold text-red-600">{stats.hotLeads}</p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                  <h2 className="text-sm font-medium text-gray-500 uppercase">Overdue Follow-ups</h2>
-                  <p className="mt-2 text-3xl font-semibold text-orange-500">{stats.overdueFollowUps}</p>
-                </div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Pipeline Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Total Leads</h2>
+                <p className="mt-2 text-3xl font-semibold text-gray-900">{stats.totalLeads}</p>
               </div>
-
-              <div className="lg:col-span-2">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Lead Status Distribution</h2>
-                <div className="bg-white p-6 rounded-lg shadow border border-gray-200 h-[480px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={stats.chartData}
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                      <YAxis axisLine={false} tickLine={false} />
-                      <Tooltip cursor={{fill: 'transparent'}} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }} />
-                      <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                        {stats.chartData?.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">New / Uncontacted</h2>
+                <p className="mt-2 text-3xl font-semibold text-blue-600">{stats.newLeads}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Hot Leads</h2>
+                <p className="mt-2 text-3xl font-semibold text-red-600">{stats.hotLeads}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                <h2 className="text-sm font-medium text-gray-500 uppercase">Overdue Follow-ups</h2>
+                <p className="mt-2 text-3xl font-semibold text-orange-500">{stats.overdueFollowUps}</p>
               </div>
             </div>
 

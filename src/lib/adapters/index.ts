@@ -164,12 +164,18 @@ export class VapiVoiceProvider implements VoiceProvider {
       if (!lead || !lead.phone) throw new Error('Lead phone number missing');
 
       const settings = await prisma.integrationSettings.findMany({
-        where: { provider: 'vapi', userId: lead.userId || undefined }
+        where: { provider: { in: ['vapi', 'vapi_assistant_id'] }, userId: lead.userId || undefined }
       });
       const vapiKey = settings.find(s => s.provider === 'vapi')?.apiKey;
+      const vapiAssistantId = settings.find(s => s.provider === 'vapi_assistant_id')?.apiKey;
 
       if (!vapiKey) {
         console.warn('Vapi credentials missing, falling back to mock provider');
+        return new MockVoiceProvider().callLead(leadId);
+      }
+
+      if (!vapiAssistantId) {
+        console.warn('Vapi Assistant ID not configured, falling back to mock provider');
         return new MockVoiceProvider().callLead(leadId);
       }
 
@@ -203,7 +209,7 @@ export class VapiVoiceProvider implements VoiceProvider {
               userId: lead.userId || "mock_user"
             }
           },
-          assistantId: 'your-vapi-assistant-id', // Assuming static or from settings
+          assistantId: vapiAssistantId,
         }),
       });
 
