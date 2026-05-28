@@ -26,6 +26,32 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
       });
   }, [resolvedParams.id]);
 
+  const [manualMessage, setManualMessage] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+
+  const sendManualMessage = async (channel: 'sms' | 'email') => {
+    if (!lead || !manualMessage.trim()) return;
+    setSendingMessage(true);
+    try {
+      const res = await fetch('/api/workflows/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            leadId: lead.id,
+            action: channel,
+            customMessage: manualMessage
+        })
+      });
+      if (!res.ok) throw new Error('Failed to send message');
+      setManualMessage('');
+      alert(`${channel.toUpperCase()} sent successfully!`);
+    } catch (e) {
+      alert(`Error sending ${channel}.`);
+    } finally {
+      setSendingMessage(false);
+    }
+  };
+
   const triggerAction = async (action: string) => {
     if (!lead) return;
     try {
@@ -107,14 +133,48 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
             <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Activity Timeline</h2>
               {lead.activities && lead.activities.length > 0 ? (
-                <ul className="space-y-4">
-                  {lead.activities.map((act: any) => (
-                    <li key={act.id} className="text-sm">
-                      <span className="font-medium text-gray-900">{act.type}</span>: {act.description}
-                      <span className="text-gray-500 ml-2 text-xs">{new Date(act.createdAt).toLocaleString()}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flow-root">
+                  <ul className="-mb-8">
+                    {lead.activities.map((act: any, actIdx: number) => {
+                      const isSms = act.type.toLowerCase().includes('sms');
+                      const isEmail = act.type.toLowerCase().includes('email');
+                      const isCall = act.type.toLowerCase().includes('call');
+
+                      let bgColor = 'bg-gray-400';
+                      if (isSms) bgColor = 'bg-green-500';
+                      else if (isEmail) bgColor = 'bg-blue-500';
+                      else if (isCall) bgColor = 'bg-purple-500';
+
+                      return (
+                        <li key={act.id}>
+                          <div className="relative pb-8">
+                            {actIdx !== lead.activities.length - 1 ? (
+                              <span className="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                            ) : null}
+                            <div className="relative flex space-x-3">
+                              <div>
+                                <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${bgColor}`}>
+                                  {isSms ? '📱' : isEmail ? '✉️' : isCall ? '📞' : '⚙️'}
+                                </span>
+                              </div>
+                              <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                                <div>
+                                  <p className="text-sm text-gray-500">
+                                    <span className="font-medium text-gray-900 mr-2">{act.type}</span>
+                                  </p>
+                                  <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{act.description}</p>
+                                </div>
+                                <div className="text-right text-sm whitespace-nowrap text-gray-500">
+                                  <time dateTime={act.createdAt}>{new Date(act.createdAt).toLocaleString()}</time>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               ) : (
                 <p className="text-sm text-gray-500">No activity recorded yet.</p>
               )}
@@ -127,9 +187,6 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
               <div className="space-y-3">
                 <button onClick={() => triggerAction('call')} className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                   AI Call
-                </button>
-                <button onClick={() => triggerAction('sms')} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
-                  Send SMS
                 </button>
                 <button onClick={() => triggerAction('warm_transfer')} className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
                   Mock Warm Transfer
@@ -144,6 +201,33 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
             </div>
+
+            <div className="bg-white shadow rounded-lg p-6 border border-gray-200">
+                <h2 className="text-lg font-semibold mb-3">Manual Override</h2>
+                <textarea
+                    value={manualMessage}
+                    onChange={(e) => setManualMessage(e.target.value)}
+                    placeholder="Type a custom message..."
+                    className="w-full h-24 p-2 border border-gray-300 rounded mb-3 text-sm focus:ring-blue-500 focus:border-blue-500"
+                />
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => sendManualMessage('sms')}
+                        disabled={sendingMessage || !manualMessage.trim()}
+                        className="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-50 text-sm font-medium"
+                    >
+                        SMS
+                    </button>
+                    <button
+                        onClick={() => sendManualMessage('email')}
+                        disabled={sendingMessage || !manualMessage.trim()}
+                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 text-sm font-medium"
+                    >
+                        Email
+                    </button>
+                </div>
+            </div>
+
           </div>
         </div>
       </div>
