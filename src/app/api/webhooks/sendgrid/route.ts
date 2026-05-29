@@ -74,6 +74,17 @@ export async function POST(req: Request) {
       data: updatedLeadData
     });
 
+    if (newStatus === "Hot Lead" && lead.userId) {
+        await prisma.notification.create({
+            data: {
+                userId: lead.userId,
+                title: "Hot Lead Alert! (Email)",
+                message: `${lead.first_name} replied positively via email. Workflow paused.`,
+                link: `/leads/${lead.id}`
+            }
+        });
+    }
+
     console.log(`[SendGrid Webhook] Lead ${lead.id} status updated to ${newStatus}. Workflow PAUSED.`);
 
     // 5. Trigger CRM Outbound Sync
