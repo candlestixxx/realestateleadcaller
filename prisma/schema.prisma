@@ -40,6 +40,8 @@ model Lead {
   city               String?
   state              String?
   zip                String?
+  latitude           Float?
+  longitude          Float?
   lead_type          String
   lead_source        String?
   status             String            @default("New")

@@ -63,6 +63,20 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    // Geocode the address if provided
+    let latitude: number | undefined = undefined;
+    let longitude: number | undefined = undefined;
+
+    if (body.property_address && body.city && body.state) {
+        // Dynamically import to avoid edge runtime issues if geocoding uses node-specific APIs later
+        const { geocodeAddress } = await import('@/lib/adapters/geocoding');
+        const coords = await geocodeAddress(body.property_address, body.city, body.state);
+        if (coords) {
+            latitude = coords.latitude;
+            longitude = coords.longitude;
+        }
+    }
+
     // Determine the workflow to assign based on lead type
     let targetWorkflow = null;
     if (body.lead_type === 'Buyer') {
@@ -77,6 +91,11 @@ export async function POST(request: Request) {
         last_name: body.last_name,
         email: body.email,
         phone: body.phone,
+        property_address: body.property_address,
+        city: body.city,
+        state: body.state,
+        latitude: latitude,
+        longitude: longitude,
         lead_type: body.lead_type || 'Buyer',
         status: 'New',
         userId: user.id,
