@@ -56,17 +56,6 @@ export async function POST(req: Request) {
                     }
                 });
 
-                if (lead.userId) {
-                    await prisma.notification.create({
-                        data: {
-                            userId: lead.userId,
-                            title: "New AI Appointment!",
-                            message: `Jules successfully booked a meeting with ${lead.first_name} for ${targetDate.toLocaleString()}.`,
-                            link: `/leads/${lead.id}`
-                        }
-                    });
-                }
-
                 results.push({
                     toolCallId: call.id,
                     result: `Success! The appointment has been booked for ${targetDate.toLocaleString()}. You can confirm this with the user.`

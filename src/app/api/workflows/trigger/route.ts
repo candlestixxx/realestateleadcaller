@@ -6,7 +6,7 @@ import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { leadId, action, agentPhone, customMessage } = body;
+    const { leadId, action, agentPhone } = body;
 
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
@@ -38,22 +38,6 @@ export async function POST(request: Request) {
         data: { leadId, type: 'Call', description: `AI Call: "${compiledScript}"` }
       });
       return NextResponse.json({ success: true, message: 'Call initiated' });
-    }
-
-    if (action === 'sms' && customMessage) {
-        await sms.sendText(leadId, customMessage);
-        await prisma.leadActivity.create({
-            data: { leadId, type: 'SMS (Manual)', description: customMessage }
-        });
-        return NextResponse.json({ success: true, message: 'SMS sent' });
-    }
-
-    if (action === 'email' && customMessage) {
-        await email.sendEmail(leadId, "Agent Follow Up", customMessage);
-        await prisma.leadActivity.create({
-            data: { leadId, type: 'Email (Manual)', description: customMessage }
-        });
-        return NextResponse.json({ success: true, message: 'Email sent' });
     }
 
     if (action === 'warm_transfer') {
