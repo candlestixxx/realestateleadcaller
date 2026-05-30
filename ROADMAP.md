@@ -7,5 +7,5 @@
 - [x] Convert human-readable street addresses (from CSV uploads or CRMs) into math-ready Map coordinates automatically.
 
 ## Phase 22: Map Rendering and Circle Prospecting
-- [ ] Render all geo-coded leads on an interactive map.
-- [ ] Build UI to generate circle-prospecting call lists based on map boundaries.
+- [x] Render all geo-coded leads on an interactive map.
+- [x] Build UI to generate circle-prospecting call lists based on map boundaries.

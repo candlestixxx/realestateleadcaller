@@ -6,8 +6,8 @@
 - [x] Intercept the `POST /api/leads` route. When a lead is created with an address, automatically ping the Geocoding API to resolve the `latitude` and `longitude` fields so they instantly appear on the Phase 20 Circle Prospecting Map.
 
 ## Phase 22: Circle Prospecting Map Rendering
-- [ ] Build the `/map` dashboard to visualize leads using `react-leaflet`.
-- [ ] Filter leads by proximity to a given address to generate targeted calling lists for "Just Sold" or "Just Listed" campaigns.
+- [x] Build the `/map` dashboard to visualize leads using `react-leaflet`.
+- [x] Filter leads by proximity to a given address to generate targeted calling lists for "Just Sold" or "Just Listed" campaigns.
 
 ## Project Finalization
 - [ ] Hand off codebase cleanly.
