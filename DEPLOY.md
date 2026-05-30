@@ -1,6 +1,24 @@
 # DEPLOYMENT INSTRUCTIONS
 
-## MVP Local Development Setup
+## Quick Start (Docker)
+The easiest way to run the application is using Docker. Ensure Docker and Docker Compose are installed on your machine.
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository_url>
+   cd <repository_folder>
+   ```
+
+2. **Start the container**
+   ```bash
+   docker-compose up --build -d
+   ```
+
+The application will be available at `http://localhost:3000`. You can log in using the default credentials (`admin@example.com` / `password123`). The SQLite database is automatically persisted in a Docker volume.
+
+---
+
+## Native Local Development Setup
 
 1. **Clone & Install**
    ```bash

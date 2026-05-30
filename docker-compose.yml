@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: jules-real-estate-concierge
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=changethis_default_secret_for_local_dev_only
+      - DATABASE_URL=file:./dev.db
+    volumes:
+      - jules_data:/app/prisma
+    restart: unless-stopped
+
+volumes:
+  jules_data:
