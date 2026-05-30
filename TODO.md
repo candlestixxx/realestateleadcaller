@@ -10,4 +10,4 @@
 - [x] Filter leads by proximity to a given address to generate targeted calling lists for "Just Sold" or "Just Listed" campaigns.
 
 ## Project Finalization
-- [ ] Hand off codebase cleanly.
+- [x] Hand off codebase cleanly.
