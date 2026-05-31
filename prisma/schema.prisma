@@ -63,6 +63,7 @@ model Lead {
   scores             LeadScore[]
   callLogs           CallLog[]
   appointments       Appointment[]
+  directMailTasks    DirectMailTask[]
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
 }
@@ -135,6 +136,7 @@ model EmailLog {
 model DirectMailTask {
   id           String   @id @default(cuid())
   leadId       String
+  lead         Lead     @relation(fields: [leadId], references: [id])
   status       String
   campaignType String
   createdAt    DateTime @default(now())
