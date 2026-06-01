@@ -1,0 +1,12 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+ROADMAP.md
+TODO.md
+HANDOFF.md
+IDEAS.md
+VISION.md
+.next
+.git

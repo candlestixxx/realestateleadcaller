@@ -4,6 +4,15 @@ import { useState } from 'react';
 
 export default function ScriptsSettingsPage() {
   const [buyerScript, setBuyerScript] = useState("Hi {{first_name}}, this is Jules with {{agent_name}}'s real estate team. I saw you were looking at homes in {{area}} and wanted to quickly help you get the right information. Are you still interested in homes around there?");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = () => {
+    setSaving(true);
+    setTimeout(() => {
+        setSaving(false);
+        alert('Script saved successfully!');
+    }, 800);
+  }
 
   return (
     <div>
@@ -18,8 +27,12 @@ export default function ScriptsSettingsPage() {
           className="w-full h-32 p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm mb-4"
         />
         <div className="flex justify-end">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
-            Save Script
+          <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save Script'}
           </button>
         </div>
       </div>

@@ -1,12 +1,21 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCrmProvider } from '@/lib/adapters';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const p = await params;
     const leadId = p.id;
     const lead = await prisma.lead.findUnique({
@@ -19,8 +28,8 @@ export async function GET(
       }
     });
 
-    if (!lead) {
-      return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    if (!lead || lead.userId !== user.id) {
+      return NextResponse.json({ error: 'Lead not found or access denied' }, { status: 404 });
     }
 
     return NextResponse.json(lead);
@@ -34,8 +43,22 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const p = await params;
     const leadId = p.id;
+
+    // Verify ownership before updating
+    const existingLead = await prisma.lead.findUnique({ where: { id: leadId }});
+    if (!existingLead || existingLead.userId !== user.id) {
+        return NextResponse.json({ error: 'Lead not found or access denied' }, { status: 404 });
+    }
+
     const body = await request.json();
     const lead = await prisma.lead.update({
       where: { id: leadId },

@@ -3,8 +3,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+import { FollowUpWorkflow, FollowUpStep } from '@prisma/client';
+
+type WorkflowWithSteps = FollowUpWorkflow & { steps: FollowUpStep[] };
+
 export default function WorkflowsPage() {
-  const [workflows, setWorkflows] = useState<any[]>([]);
+  const [workflows, setWorkflows] = useState<WorkflowWithSteps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

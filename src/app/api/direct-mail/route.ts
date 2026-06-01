@@ -1,10 +1,24 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { MockDirectMailProvider } from '@/lib/adapters';
+import { LobDirectMailProvider } from '@/lib/adapters';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const tasks = await prisma.directMailTask.findMany({
+      where: {
+        lead: {
+          userId: user.id
+        }
+      },
       orderBy: { createdAt: 'desc' },
     });
     return NextResponse.json(tasks);
@@ -15,20 +29,27 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
     const { leadId, campaignType } = body;
 
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-    if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    if (!lead || lead.userId !== user.id) return NextResponse.json({ error: 'Lead not found or access denied' }, { status: 404 });
 
-    const directMail = new MockDirectMailProvider();
-    await directMail.createMailTask(leadId, campaignType);
+    const directMail = new LobDirectMailProvider();
+    const success = await directMail.createMailTask(leadId, campaignType);
 
     const task = await prisma.directMailTask.create({
       data: {
         leadId,
         campaignType,
-        status: 'Pending',
+        status: success ? 'Dispatched' : 'Failed',
       }
     });
 
@@ -44,8 +65,24 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user?.email) {
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+        if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await request.json();
         const { taskId, status } = body;
+
+        // Verify task ownership via the lead
+        const existingTask = await prisma.directMailTask.findUnique({
+            where: { id: taskId },
+            include: { lead: true }
+        });
+        if (!existingTask || existingTask.lead.userId !== user.id) {
+            return NextResponse.json({ error: 'Task not found or access denied' }, { status: 404 });
+        }
 
         const updatedTask = await prisma.directMailTask.update({
             where: { id: taskId },

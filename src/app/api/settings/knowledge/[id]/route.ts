@@ -9,8 +9,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    const user = session?.user as any;
-    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const p = await params;
     const snippetId = p.id;
@@ -20,7 +19,7 @@ export async function DELETE(
       where: { id: snippetId }
     });
 
-    if (!snippet || snippet.userId !== user.id) {
+    if (!snippet || snippet.userId !== session.user.id) {
       return NextResponse.json({ error: 'Snippet not found or unauthorized' }, { status: 404 });
     }
 

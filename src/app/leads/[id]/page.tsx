@@ -3,9 +3,18 @@
 import { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 
+import { Lead, LeadActivity, FollowUpWorkflow, LeadScore } from '@prisma/client';
+
+type LeadProfileData = Lead & {
+  agent: any;
+  activeWorkflow: FollowUpWorkflow | null;
+  activities: LeadActivity[];
+  scores: LeadScore[];
+};
+
 export default function LeadProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const [lead, setLead] = useState<any>(null);
+  const [lead, setLead] = useState<LeadProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,6 +27,7 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
   }, [resolvedParams.id]);
 
   const triggerAction = async (action: string) => {
+    if (!lead) return;
     try {
       let endpoint = '/api/workflows/trigger';
       let payload: any = { leadId: lead.id, action, agentPhone: '555-1234' };

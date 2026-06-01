@@ -1,13 +1,27 @@
 'use client';
 
+import { useState } from 'react';
+
 export default function ProfileSettingsPage() {
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    // Mock save delay
+    setTimeout(() => {
+      setSaving(false);
+      alert('Profile saved successfully!');
+    }, 800);
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Agent Profile</h1>
 
       <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSave}>
           <div className="grid grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Display Name</label>
@@ -23,8 +37,12 @@ export default function ProfileSettingsPage() {
             </div>
           </div>
           <div className="flex justify-end">
-            <button type="button" className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
-              Save Profile
+            <button
+                type="submit"
+                disabled={saving}
+                className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Profile'}
             </button>
           </div>
         </form>

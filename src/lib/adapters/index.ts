@@ -11,13 +11,14 @@ export interface EmailProvider {
   sendEmail(leadId: string, subject: string, body: string): Promise<boolean>;
 }
 
-export interface CrmProvider {
-  updateLead(leadId: string, data: any): Promise<boolean>;
-}
-
 import sgMail from '@sendgrid/mail';
 import twilio from 'twilio';
 import { prisma } from '@/lib/prisma';
+import { Lead } from '@prisma/client';
+
+export interface CrmProvider {
+  updateLead(leadId: string, data: Partial<Lead>): Promise<boolean>;
+}
 
 export interface DirectMailProvider {
   createMailTask(leadId: string, campaignType: string): Promise<boolean>;
@@ -42,6 +43,118 @@ export class MockVoiceProvider implements VoiceProvider {
   }
 }
 
+export class GoogleCalendarProvider implements CalendarProvider {
+  async createAppointment(leadId: string, date: Date) {
+    try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead) throw new Error('Lead not found');
+
+      const settings = await prisma.integrationSettings.findFirst({
+        where: { provider: 'google_calendar_token', userId: lead.userId || undefined }
+      });
+      const token = settings?.apiKey;
+
+      if (!token) {
+        console.warn('Google Calendar token missing, falling back to mock provider');
+        return new MockCalendarProvider().createAppointment(leadId, date);
+      }
+
+      // Mock integration for Google Calendar (would use googleapis package in production)
+      // e.g. calendar.events.insert({ ... })
+      const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          summary: `Showing / Meeting with ${lead.first_name} ${lead.last_name}`,
+          description: `Automatically scheduled by Jules AI.\nPhone: ${lead.phone}\nEmail: ${lead.email}`,
+          start: {
+            dateTime: date.toISOString(),
+          },
+          end: {
+            // Assume 1 hour meeting duration
+            dateTime: new Date(date.getTime() + 60 * 60 * 1000).toISOString()
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`Google Calendar API error: ${response.statusText}`);
+        return false;
+      }
+
+      console.log(`Google Calendar: Successfully created appointment for ${lead.first_name} at ${date}`);
+      return true;
+    } catch (e) {
+      console.error('Google Calendar Error:', e);
+      return false;
+    }
+  }
+}
+
+export function getCalendarProvider(): CalendarProvider {
+  return new GoogleCalendarProvider();
+}
+
+export class LobDirectMailProvider implements DirectMailProvider {
+  async createMailTask(leadId: string, campaignType: string) {
+    try {
+      const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+      if (!lead || !lead.property_address || !lead.city || !lead.state || !lead.zip) {
+        throw new Error('Lead missing complete mailing address fields');
+      }
+
+      const settings = await prisma.integrationSettings.findFirst({
+        where: { provider: 'lob_api_key', userId: lead.userId || undefined }
+      });
+      const lobKey = settings?.apiKey;
+
+      if (!lobKey) {
+        console.warn('Lob API key missing, falling back to mock provider');
+        return new MockDirectMailProvider().createMailTask(leadId, campaignType);
+      }
+
+      const authHeader = 'Basic ' + Buffer.from(`${lobKey}:`).toString('base64');
+
+      const response = await fetch('https://api.lob.com/v1/postcards', {
+        method: 'POST',
+        headers: {
+          'Authorization': authHeader,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: `Campaign: ${campaignType}`,
+          to: {
+            name: `${lead.first_name} ${lead.last_name}`,
+            address_line1: lead.property_address,
+            address_city: lead.city,
+            address_state: lead.state,
+            address_zip: lead.zip
+          },
+          // Mock HTML template for Lob
+          front: "<html><body><h1>Exclusive Home Value Report for {{name}}</h1></body></html>",
+          back: "<html><body><h1>Contact Jules Real Estate today!</h1></body></html>",
+          merge_variables: {
+            name: lead.first_name
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lob API error: ${response.status} ${response.statusText}`);
+      }
+
+      console.log(`Lob: Successfully dispatched ${campaignType} postcard to ${lead.property_address}`);
+      return true;
+    } catch (e) {
+      console.error('Lob Direct Mail Error:', e);
+      return false;
+    }
+  }
+}
+
 export { getCrmProvider } from './crmOutbound';
 
 export class VapiVoiceProvider implements VoiceProvider {
@@ -51,12 +164,18 @@ export class VapiVoiceProvider implements VoiceProvider {
       if (!lead || !lead.phone) throw new Error('Lead phone number missing');
 
       const settings = await prisma.integrationSettings.findMany({
-        where: { provider: 'vapi', userId: lead.userId || undefined }
+        where: { provider: { in: ['vapi', 'vapi_assistant_id'] }, userId: lead.userId || undefined }
       });
       const vapiKey = settings.find(s => s.provider === 'vapi')?.apiKey;
+      const vapiAssistantId = settings.find(s => s.provider === 'vapi_assistant_id')?.apiKey;
 
       if (!vapiKey) {
         console.warn('Vapi credentials missing, falling back to mock provider');
+        return new MockVoiceProvider().callLead(leadId);
+      }
+
+      if (!vapiAssistantId) {
+        console.warn('Vapi Assistant ID missing, falling back to mock provider');
         return new MockVoiceProvider().callLead(leadId);
       }
 
@@ -84,9 +203,35 @@ export class VapiVoiceProvider implements VoiceProvider {
             name: `${lead.first_name} ${lead.last_name}`,
           },
           assistantOverrides: {
-            systemPrompt: `You are Jules, an AI real estate assistant. ${knowledgeContext}`
+            systemPrompt: `You are Jules, an AI real estate assistant. ${knowledgeContext}`,
+            variableValues: {
+              leadId: lead.id,
+              userId: lead.userId || "mock_user"
+            },
+            clientMessages: ["tool-calls"],
+            serverMessages: ["tool-calls", "end-of-call-report"],
+            serverUrl: "https://your-production-url.com/api/webhooks/vapi-tools",
+            tools: [
+              {
+                type: "function",
+                function: {
+                  name: "book_appointment",
+                  description: "Book an appointment or showing on the agent's calendar. Call this ONLY after checking agent availability and agreeing on a time with the user.",
+                  parameters: {
+                    type: "object",
+                    properties: {
+                      datetime: {
+                        type: "string",
+                        description: "The ISO 8601 string of the date and time to book (e.g., '2026-05-25T14:30:00Z')"
+                      }
+                    },
+                    required: ["datetime"]
+                  }
+                }
+              }
+            ]
           },
-          assistantId: 'your-vapi-assistant-id', // Assuming static or from settings
+          assistantId: vapiAssistantId,
         }),
       });
 
@@ -235,7 +380,7 @@ export class MockEmailProvider implements EmailProvider {
 }
 
 export class MockCrmProvider implements CrmProvider {
-  async updateLead(leadId: string, data: any) {
+  async updateLead(leadId: string, data: Partial<Lead>) {
     console.log(`Mock: Updating lead ${leadId} in CRM with data:`, data);
     return true;
   }

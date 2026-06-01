@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import Link from 'next/link';
 
+import { FollowUpStep } from '@prisma/client';
+
+type BuilderStep = FollowUpStep & { content?: string };
+
 export default function WorkflowBuilderPage() {
-  const [steps, setSteps] = useState<any[]>([]);
+  const [steps, setSteps] = useState<BuilderStep[]>([]);
   const [workflowId, setWorkflowId] = useState<string | null>(null);
   const [workflowName, setWorkflowName] = useState('Loading Workflow...');
   const [saving, setSaving] = useState(false);

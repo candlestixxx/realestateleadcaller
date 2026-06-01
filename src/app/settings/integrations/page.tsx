@@ -8,6 +8,10 @@ export default function IntegrationsSettingsPage() {
   const [twilioToken, setTwilioToken] = useState('');
   const [twilioFromNumber, setTwilioFromNumber] = useState('');
   const [crmWebhookUrl, setCrmWebhookUrl] = useState('');
+  const [lobApiKey, setLobApiKey] = useState('');
+  const [googleCalendarToken, setGoogleCalendarToken] = useState('');
+  const [fubApiKey, setFubApiKey] = useState('');
+  const [openaiApiKey, setOpenaiApiKey] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -24,6 +28,10 @@ export default function IntegrationsSettingsPage() {
             if (setting.provider === 'twilio_token') setTwilioToken(setting.apiKey);
             if (setting.provider === 'twilio_from_number') setTwilioFromNumber(setting.apiKey);
             if (setting.provider === 'crm_webhook_url') setCrmWebhookUrl(setting.apiKey);
+            if (setting.provider === 'lob_api_key') setLobApiKey(setting.apiKey);
+            if (setting.provider === 'google_calendar_token') setGoogleCalendarToken(setting.apiKey);
+            if (setting.provider === 'fub_api_key') setFubApiKey(setting.apiKey);
+            if (setting.provider === 'openai_api_key') setOpenaiApiKey(setting.apiKey);
           });
         }
       } catch (err) {
@@ -163,6 +171,98 @@ export default function IntegrationsSettingsPage() {
             />
             <button
               onClick={() => handleSave('crm_webhook_url', crmWebhookUrl)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Direct Mail (Lob)</h2>
+          <p className="text-sm text-gray-500 mb-4">Connect Lob API to autonomously send physical postcards to unresponsive leads.</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="password"
+              placeholder="live_..."
+              value={lobApiKey}
+              onChange={(e) => setLobApiKey(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('lob_api_key', lobApiKey)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Calendar (Google)</h2>
+          <p className="text-sm text-gray-500 mb-4">Provide an OAuth token or API key to allow Jules to automatically book showings.</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="password"
+              placeholder="ya29.a0..."
+              value={googleCalendarToken}
+              onChange={(e) => setGoogleCalendarToken(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('google_calendar_token', googleCalendarToken)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">Follow Up Boss API</h2>
+          <p className="text-sm text-gray-500 mb-4">Provide your FUB API Key to allow bi-directional status syncing.</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="password"
+              placeholder="fka_..."
+              value={fubApiKey}
+              onChange={(e) => setFubApiKey(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('fub_api_key', fubApiKey)}
+              disabled={saving}
+              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-200" />
+
+        <div>
+          <h2 className="text-xl font-semibold mb-2 text-gray-800">OpenAI Configuration</h2>
+          <p className="text-sm text-gray-500 mb-4">Enable true LLM natural language parsing for incoming text messages and emails (uses gpt-4o-mini).</p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="password"
+              placeholder="sk-proj-..."
+              value={openaiApiKey}
+              onChange={(e) => setOpenaiApiKey(e.target.value)}
+              className="flex-1 rounded-md border-gray-300 shadow-sm border p-2 font-mono text-sm"
+            />
+            <button
+              onClick={() => handleSave('openai_api_key', openaiApiKey)}
               disabled={saving}
               className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded shadow hover:bg-gray-50 disabled:opacity-50"
             >

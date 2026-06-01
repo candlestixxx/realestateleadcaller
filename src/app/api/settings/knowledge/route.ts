@@ -6,11 +6,10 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const user = session?.user as any;
-    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const snippets = await prisma.knowledgeBaseSnippet.findMany({
-      where: { userId: user.id },
+      where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' }
     });
     return NextResponse.json(snippets);
@@ -22,15 +21,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const user = session?.user as any;
-    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
     const { question, answer, category } = body;
 
     const snippet = await prisma.knowledgeBaseSnippet.create({
       data: {
-        userId: user.id,
+        userId: session.user.id,
         question,
         answer,
         category: category || 'General'

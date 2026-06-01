@@ -1,16 +1,13 @@
 # TODO: Immediate Short-Term Tasks
 
-## Knowledge Base Module
-- [x] Create a `KnowledgeBaseSnippet` Prisma model to store FAQs.
-- [x] Develop a "Knowledge Base" UI page in the Settings section.
-- [x] Connect the Knowledge Base snippets to the Voice AI adapter prompt generation logic.
+## Phase 21: Geo-Spatial Coordinate Enrichment
+- [x] Currently, the `src/app/leads/import/page.tsx` CSV importer only expects `first_name, last_name, email, phone, lead_type`. Update the UI to accept `property_address`, `city`, `state`, and `zip`.
+- [x] Create an adapter to hook into the Nominatim OpenStreetMap Geocoding API (`src/lib/adapters/geocoding.ts`).
+- [x] Intercept the `POST /api/leads` route. When a lead is created with an address, automatically ping the Geocoding API to resolve the `latitude` and `longitude` fields so they instantly appear on the Phase 20 Circle Prospecting Map.
 
-## Email Intelligence
-- [ ] Create an Email Reply webhook handler for SendGrid/Mailgun to parse incoming emails.
+## Phase 22: Circle Prospecting Map Rendering
+- [x] Build the `/map` dashboard to visualize leads using `react-leaflet`.
+- [x] Filter leads by proximity to a given address to generate targeted calling lists for "Just Sold" or "Just Listed" campaigns.
 
-## Completed Tasks
-- [x] Implement outbound webhooks module to push lead status updates back to upstream CRMs.
-- [x] Create UI on the Lead Profile to trigger a manual "Sync to CRM" push.
-- [x] Add `crm_webhook_url` configuration field to the Settings > Integrations UI page.
-- [x] Create `/api/webhooks/twilio` to receive incoming SMS replies.
-- [x] Write an LLM adapter (OpenAI mock for now) to perform Sentiment Analysis on the incoming message.
+## Project Finalization
+- [x] Hand off codebase cleanly.
