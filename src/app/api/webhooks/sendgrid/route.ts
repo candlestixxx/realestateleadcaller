@@ -27,10 +27,30 @@ export async function POST(req: Request) {
 
     console.log(`[SendGrid Webhook] Received email from ${fromEmail}. Subject: ${subject}`);
 
-    // Look up the lead by email
+    // Extract the to parameter to map to the correct agent's integration settings
+    const toRaw = formData.get("to") as string || "";
+    const toEmailMatch = toRaw.match(/<([^>]+)>/);
+    const toEmail = toEmailMatch ? toEmailMatch[1].trim().toLowerCase() : toRaw.trim().toLowerCase();
+
+    // Look up the tenant who owns this receiving email address
+    let tenantUserId: string | undefined = undefined;
+    if (toEmail) {
+        const settings = await prisma.integrationSettings.findFirst({
+            where: {
+                provider: 'sendgrid_from_email', // Usually the receiving email is the same as the sending email in simple setups
+                apiKey: { contains: toEmail }
+            }
+        });
+        if (settings && settings.userId) {
+            tenantUserId = settings.userId;
+        }
+    }
+
+    // Look up the lead by email, scoped to the tenant
     const lead = await prisma.lead.findFirst({
       where: {
-        email: fromEmail
+        email: fromEmail,
+        ...(tenantUserId ? { userId: tenantUserId } : {})
       }
     });
 

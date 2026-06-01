@@ -24,13 +24,32 @@ export async function POST(req: Request) {
 
     console.log(`[Twilio Webhook] Received message from ${fromNumber}: ${body}`);
 
-    // Look up the lead by phone number
-    // Note: In a real system, you'd match normalized phone numbers.
+    // Extract the to parameter to map to the correct agent's integration settings
+    const toNumberRaw = params.get("To") || "";
+    const toNumber = toNumberRaw.replace("+1", "").replace(/\D/g, "");
+
+    // Look up the tenant who owns this Twilio number
+    let tenantUserId: string | undefined = undefined;
+    if (toNumber) {
+        const settings = await prisma.integrationSettings.findFirst({
+            where: {
+                provider: 'twilio_phone_number',
+                apiKey: { contains: toNumber }
+            }
+        });
+        if (settings && settings.userId) {
+            tenantUserId = settings.userId;
+        }
+    }
+
+    // Look up the lead by phone number, specifically for the tenant who owns the receiving number
+    // Note: In a real system, you'd match normalized phone numbers strictly.
     const lead = await prisma.lead.findFirst({
       where: {
         phone: {
           contains: fromNumber
-        }
+        },
+        ...(tenantUserId ? { userId: tenantUserId } : {})
       }
     });
 
