@@ -1,18 +1,12 @@
-# IDEAS for Expansion
+# IDEAS for Expansion (v2 and beyond)
 
-## Pivot 1: Live Voice Integration (Vapi / Retell)
-*   Replace `MockVoiceProvider` with real API calls to Vapi or Retell.
-*   The `callLead` function should trigger an outbound call payload passing the compiled script and the Lead ID as metadata.
-*   Implement a webhook listener (`/api/webhooks/voice`) to receive the call transcript and AI summary *after* the call ends, dynamically updating the lead's status and score based on sentiment analysis.
+*Note: All original "Pivot" ideas from the v1 design document (Live Vapi Integration, MCP Server, Bi-Directional CRM Sync, and Lob Direct Mail Dispatch) have been successfully built into the v1.0 MVP.*
 
-## Pivot 2: MCP (Model Context Protocol) Server
-*   Build the core engine as an MCP Server.
-*   Allow the Voice AI to query the local database in real-time during the call to verify property details or agent availability, rather than relying strictly on the pre-compiled script prompt.
+## Pivot 5: AI-Driven Email Generation
+*   Integrate the OpenAI SDK to generate highly personalized follow-up emails dynamically, rather than relying solely on static templates. The prompt would use the `LeadActivity` history and `AIConversationSummary` to contextually craft the exact email.
 
-## Pivot 3: CRM Synchronization Engine
-*   Replace `MockCrmProvider` with a robust bidirectional sync engine (using OAuth).
-*   If a lead is updated in Follow Up Boss, the webhook instantly pauses or alters the Jules workflow state machine to prevent double-contacting.
+## Pivot 6: Multi-Channel Messaging via Agent Number
+*   Migrate Twilio logic to support WhatsApp and iMessage via the same numbers.
 
-## Pivot 4: Autonomous Direct Mail Dispatch
-*   Integrate Postalytics or Lob API into `MockDirectMailProvider`.
-*   When a lead hits Day 14 of the Seller sequence without answering, automatically dispatch a "Just Sold" postcard using the target property address.
+## Pivot 7: Real Estate MLS Integration
+*   Build a pipeline using the RETS/RESO Web API to ingest live local MLS data, allowing Jules to automatically reference specific active properties during the `10-Day Buyer Blitz` sequence.
