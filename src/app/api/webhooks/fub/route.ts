@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // This endpoint receives incoming webhooks from Follow Up Boss (FUB)
 export async function POST(req: Request) {

@@ -2,9 +2,18 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
 import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const user = await prisma.user.findUnique({ where: { email: session.user.email }});
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await request.json();
     const { leadId, action, agentPhone } = body;
 
@@ -12,7 +21,7 @@ export async function POST(request: Request) {
       where: { id: leadId },
       include: { agent: true }
     });
-    if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
+    if (!lead || lead.userId !== user.id) return NextResponse.json({ error: 'Lead not found or access denied' }, { status: 404 });
 
     const voice = getVoiceProvider();
     const sms = getSmsProvider();

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { SentimentAnalyzer } from "@/lib/adapters/sentiment";
 import { getCrmProvider } from "@/lib/adapters";
-
-const prisma = new PrismaClient();
 
 // This endpoint receives webhooks from Twilio when a lead replies via SMS
 export async function POST(req: Request) {
