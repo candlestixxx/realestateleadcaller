@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
+import { SentimentAnalyzer } from '@/lib/adapters/sentiment';
 import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -91,6 +92,29 @@ export async function POST(request: Request) {
         data: { leadId, type: 'SMS', description: 'SMS Sent' }
       });
       return NextResponse.json({ success: true, message: 'SMS sent' });
+    }
+
+    if (action === 'email') {
+      const activities = await prisma.leadActivity.findMany({
+          where: { leadId },
+          orderBy: { createdAt: 'desc' },
+          take: 5
+      });
+
+      const summary = await prisma.aIConversationSummary.findFirst({
+          where: { conversation: { leadId } },
+          orderBy: { createdAt: 'desc' }
+      });
+
+      const emailContent = await SentimentAnalyzer.generateEmail(lead, activities, summary, user.id);
+
+      await email.sendEmail(leadId, emailContent.subject, emailContent.body);
+
+      await prisma.leadActivity.create({
+        data: { leadId, type: 'Email', description: `AI Email Sent: "${emailContent.subject}"` }
+      });
+
+      return NextResponse.json({ success: true, message: 'AI Email generated and sent' });
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });

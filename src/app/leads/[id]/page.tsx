@@ -131,6 +131,9 @@ export default function LeadProfilePage({ params }: { params: Promise<{ id: stri
                 <button onClick={() => triggerAction('sms')} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
                   Send SMS
                 </button>
+                <button onClick={() => triggerAction('email')} className="w-full bg-sky-600 text-white py-2 px-4 rounded hover:bg-sky-700">
+                  Send AI Email
+                </button>
                 <button onClick={() => triggerAction('warm_transfer')} className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
                   Mock Warm Transfer
                 </button>

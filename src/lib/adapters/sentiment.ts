@@ -8,6 +8,66 @@ export type SentimentResult = {
 };
 
 export class SentimentAnalyzer {
+  static async generateEmail(lead: any, activities: any[], summary: any, userId?: string): Promise<{ subject: string, body: string }> {
+    let openAiKey = process.env.OPENAI_API_KEY;
+    if (userId) {
+        const settings = await prisma.integrationSettings.findFirst({
+            where: { provider: 'openai_api_key', userId }
+        });
+        if (settings?.apiKey) openAiKey = settings.apiKey;
+    }
+
+    if (openAiKey) {
+        try {
+            const openai = new OpenAI({ apiKey: openAiKey });
+
+            const contextStr = `
+            Lead Profile: ${JSON.stringify({ first_name: lead.first_name, last_name: lead.last_name, status: lead.status, type: lead.lead_type })}
+            Recent Activities: ${JSON.stringify(activities.map(a => a.description))}
+            AI Conversation Summary: ${summary?.summary || 'None available'}
+            `;
+
+            const completion = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are an elite real estate assistant named Jules. Write a highly personalized, natural, and concise email to follow up with a lead. Do not sound like a robot. Pivot towards getting a meeting or phone call. Return JSON."
+                    },
+                    { role: "user", content: `Generate an email for this lead based on their context: ${contextStr}` },
+                ],
+                response_format: {
+                    type: "json_schema",
+                    json_schema: {
+                        name: "email_result",
+                        schema: {
+                            type: "object",
+                            properties: {
+                                subject: { type: "string" },
+                                body: { type: "string" }
+                            },
+                            required: ["subject", "body"],
+                            additionalProperties: false
+                        },
+                        strict: true
+                    }
+                }
+            });
+
+            if (completion.choices[0].message.content) {
+                return JSON.parse(completion.choices[0].message.content);
+            }
+        } catch (e) {
+            console.error("[EmailGenerator] OpenAI API failed, falling back to mock heuristics.", e);
+        }
+    }
+
+    return {
+        subject: `Following up regarding your property search, ${lead.first_name}`,
+        body: `Hi ${lead.first_name},\n\nI just wanted to touch base regarding your real estate goals. Are you available for a quick chat tomorrow?\n\nBest,\nJules (AI Concierge)`
+    };
+  }
+
   static async analyze(message: string, userId?: string): Promise<SentimentResult> {
 
     // 1. Try to initialize OpenAI with the tenant's API key
