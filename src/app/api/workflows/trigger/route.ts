@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getVoiceProvider, getSmsProvider, getEmailProvider } from '@/lib/adapters';
 import { SentimentAnalyzer } from '@/lib/adapters/sentiment';
+import { getMlsProvider } from '@/lib/adapters/mls';
 import { SCRIPTS, compileScript, generateMockSummary } from '@/lib/scripts';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     const sms = getSmsProvider();
     const email = getEmailProvider();
 
-    const scriptData = {
+    const scriptData: Record<string, any> = {
       first_name: lead.first_name,
       last_name: lead.last_name,
       agent_name: lead.agent?.name || 'Local Agent',
@@ -40,9 +41,23 @@ export async function POST(request: Request) {
     };
 
     if (action === 'call') {
+      // Inject Live MLS Data for Buyers
+      if (lead.lead_type === 'Buyer' && lead.city) {
+          const mls = getMlsProvider();
+          const listings = await mls.fetchActiveListings(lead.city);
+          if (listings.length > 0) {
+              scriptData.mls_context = `There are currently properties available like ${listings[0].address} listed at $${listings[0].price}.`;
+          }
+      }
+
       await voice.callLead(leadId);
       const scriptToUse = lead.lead_type === 'Buyer' ? SCRIPTS.buyerFirstCall : SCRIPTS.sellerFirstCall;
-      const compiledScript = compileScript(scriptToUse, scriptData);
+
+      // Inject the MLS context into the AI script if available
+      let compiledScript = compileScript(scriptToUse, scriptData);
+      if (scriptData.mls_context) {
+          compiledScript += `\n\n[System Note to AI: Mention the following live MLS data: ${scriptData.mls_context}]`;
+      }
 
       await prisma.leadActivity.create({
         data: { leadId, type: 'Call', description: `AI Call: "${compiledScript}"` }
