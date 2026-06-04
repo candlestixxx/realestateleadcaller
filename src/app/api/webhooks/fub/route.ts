@@ -19,15 +19,58 @@ export async function POST(req: Request) {
 
     console.log(`[FUB Webhook] Received event: ${event} for ${personEmail}`);
 
-    const lead = await prisma.lead.findFirst({
+    let lead = await prisma.lead.findFirst({
       where: {
         email: personEmail
       }
     });
 
     if (!lead) {
-      console.log(`[FUB Webhook] No local lead found matching email: ${personEmail}`);
-      return NextResponse.json({ success: true, note: "Ignored, no matching lead." });
+      console.log(`[FUB Webhook] No local lead found matching email: ${personEmail}. Ingesting as new lead.`);
+
+      const firstName = payload.data?.firstName || payload.person?.firstName || 'Unknown';
+      const lastName = payload.data?.lastName || payload.person?.lastName || 'Lead';
+      const phone = payload.data?.phones?.[0]?.value || payload.person?.phones?.[0]?.value || null;
+
+      let leadType = 'Buyer';
+      const rawTags = (payload.data?.tags || []).join(' ').toLowerCase();
+      if (rawTags.includes('seller') || rawTags.includes('listing')) {
+        leadType = 'Seller';
+      }
+
+      let targetWorkflow = await prisma.followUpWorkflow.findFirst({
+          where: { name: leadType === 'Buyer' ? 'Buyer 10-Day Blitz' : 'Seller 14-Day Follow-Up' }
+      });
+
+      const defaultUser = await prisma.user.findFirst();
+
+      lead = await prisma.lead.create({
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          email: personEmail,
+          phone: phone,
+          lead_type: leadType,
+          lead_source: 'Follow Up Boss Webhook',
+          status: 'New',
+          userId: defaultUser?.id, // Assign to default admin if multi-tenant lookup fails
+          activeWorkflowId: targetWorkflow ? targetWorkflow.id : undefined,
+          currentWorkflowDay: targetWorkflow ? 0 : undefined,
+          next_follow_up_at: targetWorkflow ? new Date() : undefined,
+        },
+      });
+
+      if (targetWorkflow) {
+        await prisma.leadActivity.create({
+          data: {
+            leadId: lead.id,
+            type: 'Workflow Started',
+            description: `Auto-assigned to ${targetWorkflow.name} via FUB Ingestion`
+          }
+        });
+      }
+
+      return NextResponse.json({ success: true, leadId: lead.id, note: "New lead ingested successfully." });
     }
 
     let newStatus = lead.status;
