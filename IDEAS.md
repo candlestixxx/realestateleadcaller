@@ -1,12 +1,9 @@
-# IDEAS for Expansion (v2 and beyond)
+# IDEAS for Expansion
 
-*Note: All original "Pivot" ideas from the v1 design document (Live Vapi Integration, MCP Server, Bi-Directional CRM Sync, and Lob Direct Mail Dispatch) have been successfully built into the v1.0 MVP.*
+*Note: All original "Pivot" ideas from the v1 design document (Live Vapi Integration, MCP Server, Bi-Directional CRM Sync, and Lob Direct Mail Dispatch) were successfully built into the v1.0 MVP. Furthermore, the v2 expansion features (AI-Driven Email Generation, WhatsApp Twilio Migration, and Live Real Estate MLS Integration) have also been successfully merged.*
 
-## Pivot 5: AI-Driven Email Generation
-*   Integrate the OpenAI SDK to generate highly personalized follow-up emails dynamically, rather than relying solely on static templates. The prompt would use the `LeadActivity` history and `AIConversationSummary` to contextually craft the exact email.
+## Future Potential Concepts
 
-## Pivot 6: Multi-Channel Messaging via Agent Number
-*   Migrate Twilio logic to support WhatsApp and iMessage via the same numbers.
-
-## Pivot 7: Real Estate MLS Integration
-*   Build a pipeline using the RETS/RESO Web API to ingest live local MLS data, allowing Jules to automatically reference specific active properties during the `10-Day Buyer Blitz` sequence.
+*   **Native Dialing Dashboard:** Build a WebRTC client directly into the frontend dashboard so agents can pick up warm transfers natively in the browser without bridging to a mobile phone.
+*   **Predictive Lead Scoring:** Integrate an advanced ML model to analyze the full historical dataset of leads to predict the likelihood of closing, offering dynamic urgency scores based on behavioral patterns rather than rules-based heuristics.
+*   **Direct Server-Sent Events (SSE) Map Updates:** Upgrade the `react-leaflet` Circle Prospecting map to utilize an SSE stream to automatically show new leads popping up on the map in real-time as they are ingested from external CRMs.
