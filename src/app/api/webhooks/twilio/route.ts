@@ -83,13 +83,19 @@ export async function POST(req: Request) {
       newStatus = "Contacted"; // General reply
     }
 
-    // 4. Auto-Pause active workflows to prevent double-messaging
-    // Since there's no workflowStatus field, we set activeWorkflowId to null or clear currentWorkflowDay
+    // 4. Predict new intelligent Lead Score based on history
+    const recentActivities = await prisma.leadActivity.findMany({
+        where: { leadId: lead.id },
+        orderBy: { createdAt: 'desc' },
+        take: 10
+    });
+    const newScore = await SentimentAnalyzer.predictLeadScore(lead, recentActivities, lead.userId || undefined);
+
+    // 5. Auto-Pause active workflows to prevent double-messaging
     const updatedLeadData = {
         status: newStatus,
         activeWorkflowId: null, // Pause the workflow
-        // Force an urgency bump if positive
-        urgency_score: analysis.intent === "HOT" ? Math.min((lead.urgency_score || 0) + 50, 100) : lead.urgency_score
+        urgency_score: newScore
     };
 
     await prisma.lead.update({
@@ -99,7 +105,7 @@ export async function POST(req: Request) {
 
     console.log(`[Twilio Webhook] Lead ${lead.id} status updated to ${newStatus}. Workflow PAUSED.`);
 
-    // 5. Trigger CRM Outbound Sync
+    // 6. Trigger CRM Outbound Sync
     const crmProvider = getCrmProvider();
     await crmProvider.updateLead(lead.id, updatedLeadData as any);
 
