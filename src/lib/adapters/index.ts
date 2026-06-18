@@ -4,7 +4,7 @@ export interface VoiceProvider {
 }
 
 export interface SmsProvider {
-  sendText(leadId: string, message: string): Promise<boolean>;
+  sendText(leadId: string, message: string, channel?: 'sms' | 'whatsapp'): Promise<boolean>;
 }
 
 export interface EmailProvider {
@@ -323,21 +323,21 @@ export class MockDirectMailProvider implements DirectMailProvider {
 }
 
 export class MockSmsProvider implements SmsProvider {
-  async sendText(leadId: string, message: string) {
-    console.log(`Mock: Sending SMS to lead ${leadId}: ${message}`);
+  async sendText(leadId: string, message: string, channel: 'sms' | 'whatsapp' = 'sms') {
+    console.log(`Mock: Sending ${channel.toUpperCase()} to lead ${leadId}: ${message}`);
     return true;
   }
 }
 
 export class TwilioSmsProvider implements SmsProvider {
-  async sendText(leadId: string, message: string) {
+  async sendText(leadId: string, message: string, channel: 'sms' | 'whatsapp' = 'sms') {
     try {
       const lead = await prisma.lead.findUnique({ where: { id: leadId } });
       if (!lead || !lead.phone) throw new Error('Lead phone number missing');
 
       const settings = await prisma.integrationSettings.findMany({
         where: {
-          provider: { in: ['twilio_sid', 'twilio_token', 'twilio_from_number'] },
+          provider: { in: ['twilio_sid', 'twilio_token', 'twilio_from_number', 'preferred_messaging_channel'] },
           userId: lead.userId || undefined
         }
       });
@@ -345,20 +345,27 @@ export class TwilioSmsProvider implements SmsProvider {
       const sid = settings.find(s => s.provider === 'twilio_sid')?.apiKey;
       const token = settings.find(s => s.provider === 'twilio_token')?.apiKey;
       const from = settings.find(s => s.provider === 'twilio_from_number')?.apiKey;
+      const preferredChannel = settings.find(s => s.provider === 'preferred_messaging_channel')?.apiKey || channel;
 
       if (!sid || !token || !from) {
         console.warn('Twilio credentials incomplete, falling back to mock provider');
-        return new MockSmsProvider().sendText(leadId, message);
+        return new MockSmsProvider().sendText(leadId, message, preferredChannel as 'sms' | 'whatsapp');
       }
 
       const client = twilio(sid, token);
+
+      // Twilio requires "whatsapp:" prefix for WhatsApp routing
+      const isWhatsApp = preferredChannel.toLowerCase() === 'whatsapp';
+      const toStr = isWhatsApp ? `whatsapp:${lead.phone}` : lead.phone;
+      const fromStr = isWhatsApp ? `whatsapp:${from}` : from;
+
       await client.messages.create({
         body: message,
-        from: from,
-        to: lead.phone
+        from: fromStr,
+        to: toStr
       });
 
-      console.log(`Twilio: Successfully sent SMS to ${lead.phone}`);
+      console.log(`Twilio: Successfully sent ${isWhatsApp ? 'WhatsApp message' : 'SMS'} to ${toStr}`);
       return true;
     } catch (e) {
       console.error('Twilio Error:', e);

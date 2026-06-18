@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getCrmProvider, getCalendarProvider } from "@/lib/adapters";
-
-const prisma = new PrismaClient();
 
 // This endpoint receives EndOfCall webhooks from Vapi.ai
 export async function POST(req: Request) {

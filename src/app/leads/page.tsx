@@ -69,7 +69,13 @@ export default function LeadsPage() {
           >
             <option value="">All Statuses</option>
             <option value="New">New</option>
+            <option value="Contacted">Contacted</option>
+            <option value="Hot Lead">Hot Lead</option>
+            <option value="Appointment Set">Appointment Set</option>
             <option value="Warm Transfer Completed">Warm Transfer Completed</option>
+            <option value="Nurture">Nurture</option>
+            <option value="Closed/Archived">Closed/Archived</option>
+            <option value="Do Not Contact">Do Not Contact</option>
           </select>
           <select
             value={typeFilter}

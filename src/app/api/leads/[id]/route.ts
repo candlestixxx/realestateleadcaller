@@ -60,9 +60,13 @@ export async function PUT(
     }
 
     const body = await request.json();
+
+    // Prevent Mass Assignment / IDOR: Strip out protected fields from the update payload
+    const { id, userId, createdAt, updatedAt, ...safeUpdateData } = body;
+
     const lead = await prisma.lead.update({
       where: { id: leadId },
-      data: body,
+      data: safeUpdateData,
     });
 
     // Trigger CRM sync out of band

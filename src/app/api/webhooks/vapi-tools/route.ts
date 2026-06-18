@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { getCalendarProvider } from "@/lib/adapters";
-
-const prisma = new PrismaClient();
 
 // This endpoint receives mid-call function execution requests from Vapi.ai (Server URL)
 export async function POST(req: Request) {
