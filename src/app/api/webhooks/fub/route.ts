@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         leadType = 'Seller';
       }
 
-      let targetWorkflow = await prisma.followUpWorkflow.findFirst({
+      const targetWorkflow = await prisma.followUpWorkflow.findFirst({
           where: { name: leadType === 'Buyer' ? 'Buyer 10-Day Blitz' : 'Seller 14-Day Follow-Up' }
       });
 

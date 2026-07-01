@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { GeocodingAdapter } from '@/lib/adapters/geocoding';
 
 export async function GET(request: Request) {
   try {
@@ -63,6 +64,17 @@ export async function POST(request: Request) {
 
     const body = await request.json();
 
+    let lat: number | null = null;
+    let lon: number | null = null;
+
+    if (body.property_address && body.city && body.state && body.zip) {
+      const coords = await GeocodingAdapter.geocode(body.property_address, body.city, body.state, body.zip);
+      if (coords) {
+        lat = coords.latitude;
+        lon = coords.longitude;
+      }
+    }
+
     // Determine the workflow to assign based on lead type
     let targetWorkflow = null;
     if (body.lead_type === 'Buyer') {
@@ -77,6 +89,12 @@ export async function POST(request: Request) {
         last_name: body.last_name,
         email: body.email,
         phone: body.phone,
+        property_address: body.property_address,
+        city: body.city,
+        state: body.state,
+        zip: body.zip,
+        latitude: lat,
+        longitude: lon,
         lead_type: body.lead_type || 'Buyer',
         status: 'New',
         userId: user.id,
