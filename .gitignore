@@ -50,3 +50,4 @@ next-env.d.ts
 dev.log
 dev.log
 *.db
+dev_server.log
