@@ -44,6 +44,8 @@ model Lead {
   lead_source        String?
   status             String            @default("New")
   urgency_score      Int?
+  latitude           Float?
+  longitude          Float?
   motivation         String?
   timeline           String?
   budget             String?

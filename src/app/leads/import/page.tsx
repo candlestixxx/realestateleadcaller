@@ -19,10 +19,11 @@ export default function ImportLeadsPage() {
     try {
       const rows = csvData.split('\n').map(row => row.trim()).filter(row => row.length > 0);
 
-      // Skip header row if present, assuming format: first_name,last_name,email,phone,lead_type
+      // Skip header row if present, assuming format: first_name,last_name,email,phone,lead_type,property_address,city,state,zip
       const dataRows = rows[0].toLowerCase().includes('first_name') ? rows.slice(1) : rows;
 
       for (const row of dataRows) {
+        // Simple CSV parse handling commas (not fully robust for quotes but sufficient for MVP)
         const cols = row.split(',');
         if (cols.length >= 2) {
           const payload = {
@@ -30,7 +31,11 @@ export default function ImportLeadsPage() {
             last_name: cols[1]?.trim() || 'Lead',
             email: cols[2]?.trim() || '',
             phone: cols[3]?.trim() || '',
-            lead_type: cols[4]?.trim() || 'Buyer'
+            lead_type: cols[4]?.trim() || 'Buyer',
+            property_address: cols[5]?.trim() || '',
+            city: cols[6]?.trim() || '',
+            state: cols[7]?.trim() || '',
+            zip: cols[8]?.trim() || '',
           };
 
           try {
@@ -81,13 +86,13 @@ export default function ImportLeadsPage() {
 
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
           <p className="text-gray-600 mb-4 text-sm">
-            Paste your CSV data below. The expected format is: <strong>first_name, last_name, email, phone, lead_type</strong>
+            Paste your CSV data below. The expected format is: <strong>first_name, last_name, email, phone, lead_type, property_address, city, state, zip</strong>
           </p>
           <textarea
             value={csvData}
             onChange={(e) => setCsvData(e.target.value)}
             className="w-full h-64 p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 font-mono text-sm mb-4"
-            placeholder="John,Doe,john@example.com,555-0100,Buyer&#10;Jane,Smith,jane@example.com,555-0200,Seller"
+            placeholder="John,Doe,john@example.com,555-0100,Buyer,123 Main St,Detroit,MI,48226&#10;Jane,Smith,jane@example.com,555-0200,Seller,456 Oak St,Chicago,IL,60601"
           />
           <div className="flex justify-end">
             <button
