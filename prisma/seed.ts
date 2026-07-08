@@ -27,7 +27,7 @@ async function main() {
   })
 
   // Create Workflows
-  const buyerWorkflow = await prisma.followUpWorkflow.create({
+  await prisma.followUpWorkflow.create({
     data: {
       name: 'Buyer 10-Day Blitz',
       description: 'Aggressive 10-day follow up for new buyers',
@@ -40,7 +40,7 @@ async function main() {
     },
   })
 
-  const sellerWorkflow = await prisma.followUpWorkflow.create({
+  await prisma.followUpWorkflow.create({
     data: {
       name: 'Seller 14-Day Follow-Up',
       description: '14-day sequence for seller leads',
