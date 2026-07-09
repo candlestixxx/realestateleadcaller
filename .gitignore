@@ -24,13 +24,6 @@
 .DS_Store
 *.pem
 
-# AI tool session data
-.hypernexus/
-.hypercode/
-.hypernexus-session.json
-.hypernexus_startup_marker
-audit-*.jsonl
-
 # debug
 npm-debug.log*
 yarn-debug.log*

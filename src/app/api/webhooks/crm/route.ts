@@ -56,6 +56,17 @@ export async function POST(request: Request) {
       });
     }
 
+    if (defaultUser?.id) {
+      await prisma.notification.create({
+        data: {
+          userId: defaultUser.id,
+          title: 'New Lead Ingested',
+          message: `${firstName} ${lastName} was received via CRM Webhook.`,
+          linkUrl: `/leads/${lead.id}`
+        }
+      });
+    }
+
     return NextResponse.json({ success: true, leadId: lead.id, message: 'Lead received and processed.' }, { status: 201 });
   } catch (error) {
     console.error('CRM Webhook Error:', error);
