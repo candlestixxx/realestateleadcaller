@@ -1,7 +1,7 @@
 # TODO: Immediate Short-Term Tasks
 
-## Phase 24: Direct Mail Dispatch Automation
-- [ ] Connect `LobDirectMailProvider` to actual background jobs in Inngest rather than synchronous UI wait times.
+## Phase 25: Direct Native Calling
+- [ ] Investigate Twilio WebRTC client SDK for embedding an active dialer directly into the Next.js React Dashboard.
 
 ## Project Finalization
 - [x] Handoff and code cleanup.

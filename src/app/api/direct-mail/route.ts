@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { LobDirectMailProvider } from '@/lib/adapters';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { inngest } from "@/inngest/client";
 
 export async function GET() {
   try {
@@ -42,19 +42,27 @@ export async function POST(request: Request) {
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
     if (!lead || lead.userId !== user.id) return NextResponse.json({ error: 'Lead not found or access denied' }, { status: 404 });
 
-    const directMail = new LobDirectMailProvider();
-    const success = await directMail.createMailTask(leadId, campaignType);
-
+    // 1. Create task in Pending state
     const task = await prisma.directMailTask.create({
       data: {
         leadId,
         campaignType,
-        status: success ? 'Dispatched' : 'Failed',
+        status: 'Pending',
       }
     });
 
+    // 2. Dispatch async Inngest event
+    await inngest.send({
+        name: 'direct-mail/dispatch',
+        data: {
+            leadId,
+            campaignType,
+            taskId: task.id
+        }
+    });
+
     await prisma.leadActivity.create({
-      data: { leadId, type: 'Direct Mail', description: `Direct mail task created for ${campaignType}` }
+      data: { leadId, type: 'Direct Mail', description: `Direct mail task queued for ${campaignType}` }
     });
 
     return NextResponse.json(task, { status: 201 });

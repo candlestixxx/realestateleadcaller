@@ -1,6 +1,6 @@
 import { inngest } from "./client";
 import { prisma } from "@/lib/prisma";
-import { getVoiceProvider, getSmsProvider, getEmailProvider, getCrmProvider } from "@/lib/adapters";
+import { getVoiceProvider, getSmsProvider, getEmailProvider, getCrmProvider, LobDirectMailProvider } from "@/lib/adapters";
 import { compileScript } from "@/lib/scripts";
 
 import { Lead, Agent, User, FollowUpWorkflow, FollowUpStep } from "@prisma/client";
@@ -8,7 +8,7 @@ import { Lead, Agent, User, FollowUpWorkflow, FollowUpStep } from "@prisma/clien
 // The inngest handler expects a single generic function argument, not strict structural overriding here
 // We'll let inngest infer the arguments.
 export const processWorkflowTick = inngest.createFunction(
-  { id: "process-workflow-tick" },
+  { id: "process-workflow-tick", triggers: [{ event: "workflow/tick" }] },
   async ({ event, step }: any) => {
 
     // 1. Fetch overdue leads (same logic as the old tick endpoint)
@@ -120,5 +120,26 @@ export const processWorkflowTick = inngest.createFunction(
     processedCount = results.filter(r => !!r).length;
 
     return { message: `Processed ${processedCount} leads.` };
+  }
+);
+
+export const dispatchDirectMail = inngest.createFunction(
+  { id: "dispatch-direct-mail", triggers: [{ event: "direct-mail/dispatch" }] },
+  async ({ event, step }: any) => {
+    const { leadId, campaignType, taskId } = event.data;
+
+    return await step.run("execute-lob-api", async () => {
+      const directMail = new LobDirectMailProvider();
+      const success = await directMail.createMailTask(leadId, campaignType);
+
+      await prisma.directMailTask.update({
+        where: { id: taskId },
+        data: {
+          status: success ? 'Dispatched' : 'Failed'
+        }
+      });
+
+      return { success, taskId };
+    });
   }
 );

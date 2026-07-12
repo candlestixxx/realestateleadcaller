@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Version numbers are tracked globally in `VERSION.md`.
 
+## [0.4.0] - 2026-07-02
+
+### Added
+- Phase 24: Direct Mail Dispatch Automation. Migrated the `LobDirectMailProvider` from blocking synchronous UI requests to using durable `inngest` background jobs. The `/api/direct-mail` endpoint now queues a 'Pending' task and dispatches a `direct-mail/dispatch` event.
+
 ## [0.3.0] - 2026-07-01
 
 ### Added
