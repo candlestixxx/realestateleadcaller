@@ -13,6 +13,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@prisma/client": "^5.22.0",
     "@sendgrid/mail": "^8.1.6",
+    "@twilio/voice-sdk": "^2.18.3",
     "@types/leaflet": "^1.9.21",
     "bcryptjs": "^3.0.3",
     "inngest": "^4.4.0",

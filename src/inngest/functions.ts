@@ -123,6 +123,41 @@ export const processWorkflowTick = inngest.createFunction(
   }
 );
 
+export const evaluateLeadPoolScoring = inngest.createFunction(
+  { id: "evaluate-lead-pool-scoring", triggers: [{ event: "scoring/evaluate-pool" }] },
+  async ({ event, step }: any) => {
+    // This background job runs periodically to predict ML scores for all active leads across the entire pool
+    const activeLeads = await step.run("fetch-active-leads", async () => {
+       return await prisma.lead.findMany({
+         where: { status: { notIn: ["Closed/Archived", "Do Not Contact", "Nurture"] } },
+         include: { activities: { orderBy: { createdAt: 'desc' }, take: 10 } },
+       });
+    });
+
+    let updatedCount = 0;
+    const batchSize = 10;
+
+    for (let i = 0; i < activeLeads.length; i += batchSize) {
+        const batch = activeLeads.slice(i, i + batchSize);
+        await step.run(`process-scoring-batch-${i}`, async () => {
+            for (const lead of batch) {
+                const { SentimentAnalyzer } = await import('@/lib/adapters/sentiment');
+                const newScore = await SentimentAnalyzer.predictLeadScore(lead, lead.activities, lead.userId || undefined);
+
+                await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { urgency_score: newScore }
+                });
+            }
+        });
+        updatedCount += batch.length;
+    }
+
+    return { message: `Re-evaluated predictive ML scoring for ${updatedCount} leads.` };
+  }
+);
+
+
 export const dispatchDirectMail = inngest.createFunction(
   { id: "dispatch-direct-mail", triggers: [{ event: "direct-mail/dispatch" }] },
   async ({ event, step }: any) => {

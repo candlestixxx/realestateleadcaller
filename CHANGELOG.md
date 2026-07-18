@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Version numbers are tracked globally in `VERSION.md`.
 
+## [0.5.0] - 2026-07-03
+
+### Added
+- Phase 26: Direct Native Calling. Added `@twilio/voice-sdk`, a token generation endpoint (`/api/twilio/token`), and a global floating `NativeDialer` component so agents can handle warm transfers in the browser.
+- Phase 25: Advanced Lead Scoring. Added an `inngest` batch job (`evaluate-lead-pool-scoring`) and updated the `SentimentAnalyzer` to use a robust ML-predictive prompt for scoring leads across the CRM. Added a "Re-Score" trigger button to the dashboard.
+
 ## [0.4.0] - 2026-07-02
 
 ### Added

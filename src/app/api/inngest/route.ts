@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
 import { inngest } from "@/inngest/client";
-import { processWorkflowTick, dispatchDirectMail } from "@/inngest/functions";
+import { processWorkflowTick, dispatchDirectMail, evaluateLeadPoolScoring } from "@/inngest/functions";
 
 // Create an API that serves zero-config routing
 export const { GET, POST, PUT } = serve({
@@ -8,5 +8,6 @@ export const { GET, POST, PUT } = serve({
   functions: [
     processWorkflowTick,
     dispatchDirectMail,
+    evaluateLeadPoolScoring,
   ],
 });

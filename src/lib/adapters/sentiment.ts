@@ -91,7 +91,7 @@ export class SentimentAnalyzer {
                 messages: [
                     {
                         role: "system",
-                        content: "You are an expert real estate data scientist. Analyze the lead's profile and recent activities. Calculate an exact integer 'urgency_score' from 0 to 100 representing how close this lead is to transacting (100 being immediate). Respond with ONLY JSON."
+                        content: "You are an expert real estate data scientist with a predictive ML background. Analyze the lead's profile, financial indicators (budget, preapproval), timeline, and recent behavioral activities. Calculate an exact integer 'urgency_score' from 0 to 100 representing how close this lead is to transacting (100 being immediate). Evaluate cross-signals such as unresponsive emails vs. proactive calls. Respond with ONLY JSON."
                     },
                     { role: "user", content: `Predict score for: ${contextStr}` },
                 ],

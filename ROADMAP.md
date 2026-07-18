@@ -8,7 +8,7 @@
 - **Phase 24:** Direct Mail Dispatch Automation (LobDirectMailProvider migrated to Inngest background event jobs to unblock UI).
 
 ## Phase 25: Advanced Lead Scoring
-- [ ] Transition from heuristic/rule-based scoring to ML-based predictive models analyzing the entire CRM historical lead pool.
+- [x] Transition from heuristic/rule-based scoring to ML-based predictive models analyzing the entire CRM historical lead pool. Added Inngest batch evaluation process and upgraded SentimentAnalyzer AI prompt.
 
 ## Phase 26: Direct Native Calling
-- [ ] Implement WebRTC within the dashboard to allow agents to pick up warm transfers natively in the browser without bridging to external SIPs.
+- [x] Implement WebRTC within the dashboard to allow agents to pick up warm transfers natively in the browser without bridging to external SIPs. Added `@twilio/voice-sdk`, token API, and a floating global NativeDialer widget.

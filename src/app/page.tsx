@@ -42,17 +42,38 @@ export default function Dashboard() {
     }
   };
 
+  const runScoring = async () => {
+    try {
+      await fetch('/api/inngest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'scoring/evaluate-pool' })
+      });
+      alert(`Sent trigger to Inngest to evaluate lead pool scoring. Scores will update shortly.`);
+    } catch (e) {
+      alert('Error triggering scoring engine.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">AI Real Estate Concierge Dashboard</h1>
-          <button
-            onClick={runEngine}
-            className="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700"
-          >
-            Run Workflow Engine
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={runScoring}
+              className="bg-indigo-600 text-white px-4 py-2 rounded shadow hover:bg-indigo-700"
+            >
+              Re-Score Leads (ML)
+            </button>
+            <button
+              onClick={runEngine}
+              className="bg-purple-600 text-white px-4 py-2 rounded shadow hover:bg-purple-700"
+            >
+              Run Workflow Engine
+            </button>
+          </div>
         </header>
 
         {stats ? (
