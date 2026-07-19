@@ -1,6 +1,6 @@
 # FINAL PROJECT HANDOFF: Jules AI Real Estate Concierge
 
-## Summary of Accomplishments (Phases 1-23 Completed)
+## Summary of Accomplishments (Phases 1-26 Completed)
 Over the course of this extensive build sprint, the entire "Jules AI Real Estate Concierge" platform was built from scratch into a fully functional powerhouse.
 
 Key Highlights:
@@ -14,10 +14,13 @@ Key Highlights:
 8. **Bi-Directional CRM Webhooks:** An outbound CRM push adapter fires on lead state changes to keep external systems (like Follow Up Boss) updated. Furthermore, `/api/webhooks/fub` listens for CRM state changes and halts our internal workflows if an agent marks a lead as "Trash" or "Closed".
 9. **Dashboard KPI Metrics:** The main UI intelligently aggregates Conversion Rates, DNC Rates, Connect Rates (>30s), and dynamically renders Upcoming Appointments using Recharts.
 10. **Omnichannel UI:** The frontend sports a fully color-coded Activity Timeline UI distinguishing SMS/Voice/Email activities. It also provides a "Manual Override" box to instantly push SendGrid/Twilio messages to leads outside of chron sequences.
-11. **Global Notification Engine:** A `NotificationsBanner` component rests in the global Next.js Layout. When Vapi books an appointment or Twilio receives a hot inbound text, the webhooks write a `Notification` to the database which instantly alerts the human agent via a dashboard Toast.
-12. **Geo-Spatial Map Prospecting (Phase 21 & 22 Completed):** Integrated the Nominatim Geocoding API to parse lead addresses into Map Coordinates via a new `GeocodingAdapter`. The `POST /api/leads` endpoint natively geocodes addresses and saves `latitude` and `longitude` fields to the `Lead` model in Prisma. Built a Circle Prospecting dashboard (`/map`) using `react-leaflet` and the Haversine formula to draw radial boundaries and dynamically export geographic `.csv` calling lists. The CSV import tool (`src/app/leads/import/page.tsx`) was also updated to accept address data fields.
-13. **Dynamic Provisioning:** Agents can pick their distinct Vapi AI voices from an API-fetched configuration dropdown.
-14. **Dockerization:** The application is fully containerized. A multi-stage `Dockerfile` leverages Next.js `standalone` output for tiny footprint production images, and `docker-compose.yml` provides a one-click local deployment with persistent SQLite volumes.
+11. **Global Notification Engine (Phase 23 Completed):** A `NotificationsBanner` component rests in the global Next.js Layout. When Vapi books an appointment or Twilio receives a hot inbound text, the webhooks write a `Notification` to the database which instantly alerts the human agent via a dashboard Toast.
+12. **Direct Mail Dispatch Automation (Phase 24 Completed):** Migrated the `LobDirectMailProvider` from blocking synchronous UI requests to using durable `inngest` background jobs.
+13. **Advanced Lead Scoring (Phase 25 Completed):** Transitioned from heuristic/rule-based scoring to ML-based predictive models analyzing the entire CRM historical lead pool via an Inngest batch job.
+14. **Direct Native Calling (Phase 26 Completed):** Implemented WebRTC within the dashboard to allow agents to pick up warm transfers natively in the browser without bridging to external SIPs, utilizing `@twilio/voice-sdk`.
+15. **Geo-Spatial Map Prospecting (Phase 21 & 22 Completed):** Integrated the Nominatim Geocoding API to parse lead addresses into Map Coordinates via a new `GeocodingAdapter`. The `POST /api/leads` endpoint natively geocodes addresses and saves `latitude` and `longitude` fields to the `Lead` model in Prisma. Built a Circle Prospecting dashboard (`/map`) using `react-leaflet` and the Haversine formula to draw radial boundaries and dynamically export geographic `.csv` calling lists. The CSV import tool (`src/app/leads/import/page.tsx`) was also updated to accept address data fields.
+16. **Dynamic Provisioning:** Agents can pick their distinct Vapi AI voices from an API-fetched configuration dropdown.
+17. **Dockerization:** The application is fully containerized. A multi-stage `Dockerfile` leverages Next.js `standalone` output for tiny footprint production images, and `docker-compose.yml` provides a one-click local deployment with persistent SQLite volumes.
 
 ## Technical Notes for Future Developers
 - **Database:** Prisma ORM connected to SQLite (`dev.db`). Run `node setup.js` to automatically boostrap the database, compile the project, and seed the test user.
