@@ -44,3 +44,4 @@ dev.log
 dev.log
 *.db
 dev_server.log
+data/

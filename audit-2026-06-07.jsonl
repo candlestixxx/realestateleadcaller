@@ -1,0 +1,8 @@
+{"timestamp":1780824145648,"action":"TOOL_START","params":{"tool":"take_screenshot","args":{"wait_for_previous":true}},"level":"INFO"}
+{"timestamp":1780824148107,"action":"TOOL_END","params":{"tool":"take_screenshot","error":"Tool execution failed: Tool take_screenshot not found in any connected MCP server.","duration":2466},"level":"ERROR"}
+{"timestamp":1780824208305,"action":"TOOL_START","params":{"tool":"browser_screenshot","args":{"wait_for_previous":true}},"level":"INFO"}
+{"timestamp":1780824209046,"action":"TOOL_END","params":{"tool":"browser_screenshot","error":"Tool execution failed: Tool browser_screenshot not found in any connected MCP server.","duration":743},"level":"ERROR"}
+{"timestamp":1780824413059,"action":"TOOL_START","params":{"tool":"read_page","args":{}},"level":"INFO"}
+{"timestamp":1780824413062,"action":"TOOL_END","params":{"tool":"read_page","result":"{\"content\":[]}","duration":5},"level":"INFO"}
+{"timestamp":1780824415829,"action":"TOOL_START","params":{"tool":"browser_debug","args":{"action":"attach"}},"level":"INFO"}
+{"timestamp":1780824415893,"action":"TOOL_END","params":{"tool":"browser_debug","error":"Tool execution failed: Tool browser_debug not found in any connected MCP server.","duration":65},"level":"ERROR"}
