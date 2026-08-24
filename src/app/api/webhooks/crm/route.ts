@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { broadcastEvent } from '@/lib/sse/emitter';
+import { GeocodingAdapter } from '@/lib/adapters/geocoding';
 
 export async function POST(request: Request) {
   try {
@@ -30,12 +32,30 @@ export async function POST(request: Request) {
     // Default to the first user in the system (the admin) to prevent orphaned leads
     const defaultUser = await prisma.user.findFirst();
 
+    // Geocode if address is provided
+    let lat: number | null = null;
+    let lon: number | null = null;
+    if (body.addresses?.[0]) {
+      const addr = body.addresses[0];
+      const coords = await GeocodingAdapter.geocode(addr.street, addr.city, addr.state, addr.zip);
+      if (coords) {
+         lat = coords.latitude;
+         lon = coords.longitude;
+      }
+    }
+
     const lead = await prisma.lead.create({
       data: {
         first_name: firstName,
         last_name: lastName,
         email: email,
         phone: phone,
+        property_address: body.addresses?.[0]?.street,
+        city: body.addresses?.[0]?.city,
+        state: body.addresses?.[0]?.state,
+        zip: body.addresses?.[0]?.zip,
+        latitude: lat,
+        longitude: lon,
         lead_type: leadType,
         lead_source: body.source || 'CRM Webhook',
         status: 'New',
@@ -45,6 +65,9 @@ export async function POST(request: Request) {
         next_follow_up_at: targetWorkflow ? new Date() : undefined,
       },
     });
+
+    // Broadcast to SSE map clients
+    broadcastEvent('new_lead', lead);
 
     if (targetWorkflow) {
       await prisma.leadActivity.create({

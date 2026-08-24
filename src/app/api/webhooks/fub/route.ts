@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { broadcastEvent } from "@/lib/sse/emitter";
 
 // This endpoint receives incoming webhooks from Follow Up Boss (FUB)
 export async function POST(req: Request) {
@@ -69,6 +70,8 @@ export async function POST(req: Request) {
           }
         });
       }
+
+      broadcastEvent('new_lead', lead);
 
       return NextResponse.json({ success: true, leadId: lead.id, note: "New lead ingested successfully." });
     }
