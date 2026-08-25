@@ -51,7 +51,62 @@ export default function MapPage() {
       }
     };
     fetchLeads();
-  }, []);
+
+    // Subscribe to SSE for live map updates
+    const eventSource = new EventSource('/api/sse');
+
+    eventSource.onmessage = (event) => {
+      if (event.data === 'heartbeat') return;
+      try {
+        const payload = JSON.parse(event.data);
+        // Only interested in new_lead events
+        if (payload.event === 'new_lead') {
+           const newLead = payload.data;
+           if (newLead.latitude && newLead.longitude) {
+              setLeads(prev => [newLead, ...prev]);
+              // Also add to filtered list if it matches the current radius
+              setFilteredLeads(prev => {
+                if (!targetCoords) return [newLead, ...prev];
+                const dist = haversineDistance(targetCoords.lat, targetCoords.lng, newLead.latitude, newLead.longitude);
+                if (dist <= radiusMiles) {
+                   return [newLead, ...prev];
+                }
+                return prev;
+              });
+           }
+        }
+      } catch (err) {
+        // Ignore parse errors on heartbeat
+      }
+    };
+
+    // Explicit event listener for labeled events
+    eventSource.addEventListener('new_lead', (event: any) => {
+       try {
+           const newLead = JSON.parse(event.data);
+           if (newLead.latitude && newLead.longitude) {
+              setLeads(prev => {
+                 // Prevent duplicates in case React re-runs
+                 if (prev.some(l => l.id === newLead.id)) return prev;
+                 return [newLead, ...prev];
+              });
+              setFilteredLeads(prev => {
+                if (prev.some(l => l.id === newLead.id)) return prev;
+                if (!targetCoords) return [newLead, ...prev];
+                const dist = haversineDistance(targetCoords.lat, targetCoords.lng, newLead.latitude, newLead.longitude);
+                if (dist <= radiusMiles) {
+                   return [newLead, ...prev];
+                }
+                return prev;
+              });
+           }
+       } catch (err) {}
+    });
+
+    return () => {
+      eventSource.close();
+    };
+  }, [radiusMiles, targetCoords]);
 
   const haversineDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const toRad = (value: number) => (value * Math.PI) / 180;

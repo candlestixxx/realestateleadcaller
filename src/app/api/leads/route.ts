@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { GeocodingAdapter } from '@/lib/adapters/geocoding';
+import { broadcastEvent } from '@/lib/sse/emitter';
 
 export async function GET(request: Request) {
   try {
@@ -113,6 +114,9 @@ export async function POST(request: Request) {
         }
       });
     }
+
+    // Broadcast creation to the map UI
+    broadcastEvent('new_lead', lead);
 
     return NextResponse.json(lead, { status: 201 });
   } catch (error) {

@@ -12,3 +12,6 @@
 
 ## Phase 26: Direct Native Calling
 - [x] Implement WebRTC within the dashboard to allow agents to pick up warm transfers natively in the browser without bridging to external SIPs. Added `@twilio/voice-sdk`, token API, and a floating global NativeDialer widget.
+
+## Phase 27: Direct Server-Sent Events (SSE) Map Updates
+- [x] Upgrade the `react-leaflet` Circle Prospecting map to utilize an SSE stream to automatically show new leads popping up on the map in real-time as they are ingested from external CRMs.
