@@ -52,9 +52,8 @@ To simulate the background cron job that processes automated follow-ups:
     curl -X POST http://localhost:3000/api/engine/tick
     ```
 
-## Recommended Next Steps
+## Production Deployment
 
-1.  **Implement Real Providers**: Replace the `Mock` classes in `src/lib/adapters` with actual API integrations (e.g., Retell/Vapi for Voice, Twilio for SMS).
-2.  **Cron Job Scheduler**: Set up a real cron job (e.g., using GitHub Actions, Vercel Cron, or a Node scheduler) to hit `/api/engine/tick` automatically.
-3.  **Authentication**: Add NextAuth or similar to secure the dashboard and API routes.
-4.  **Webhooks**: Build inbound webhooks to receive live lead data from external CRMs (Follow Up Boss, KVCore, etc.).
+This application is containerized and ready for production. All "Next Steps" from the MVP phase (Authentication, Webhooks, Live Adapters for Twilio/SendGrid/Vapi, and Inngest Background queues) have been fully implemented.
+
+Please see [DEPLOY.md](./DEPLOY.md) and [HANDOFF.md](./HANDOFF.md) for detailed deployment and architectural notes.

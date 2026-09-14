@@ -1,6 +1,6 @@
 # FINAL PROJECT HANDOFF: Jules AI Real Estate Concierge
 
-## Summary of Accomplishments (Phases 1-26 Completed)
+## Summary of Accomplishments (Phases 1-27 Completed)
 Over the course of this extensive build sprint, the entire "Jules AI Real Estate Concierge" platform was built from scratch into a fully functional powerhouse.
 
 Key Highlights:
@@ -18,9 +18,10 @@ Key Highlights:
 12. **Direct Mail Dispatch Automation (Phase 24 Completed):** Migrated the `LobDirectMailProvider` from blocking synchronous UI requests to using durable `inngest` background jobs.
 13. **Advanced Lead Scoring (Phase 25 Completed):** Transitioned from heuristic/rule-based scoring to ML-based predictive models analyzing the entire CRM historical lead pool via an Inngest batch job.
 14. **Direct Native Calling (Phase 26 Completed):** Implemented WebRTC within the dashboard to allow agents to pick up warm transfers natively in the browser without bridging to external SIPs, utilizing `@twilio/voice-sdk`.
-15. **Geo-Spatial Map Prospecting (Phase 21 & 22 Completed):** Integrated the Nominatim Geocoding API to parse lead addresses into Map Coordinates via a new `GeocodingAdapter`. The `POST /api/leads` endpoint natively geocodes addresses and saves `latitude` and `longitude` fields to the `Lead` model in Prisma. Built a Circle Prospecting dashboard (`/map`) using `react-leaflet` and the Haversine formula to draw radial boundaries and dynamically export geographic `.csv` calling lists. The CSV import tool (`src/app/leads/import/page.tsx`) was also updated to accept address data fields.
-16. **Dynamic Provisioning:** Agents can pick their distinct Vapi AI voices from an API-fetched configuration dropdown.
-17. **Dockerization:** The application is fully containerized. A multi-stage `Dockerfile` leverages Next.js `standalone` output for tiny footprint production images, and `docker-compose.yml` provides a one-click local deployment with persistent SQLite volumes.
+15. **Direct Server-Sent Events Map Updates (Phase 27 Completed):** Added an `/api/sse` streaming endpoint to push realtime geocoded leads to the Circle Prospecting map dashboard directly from CRM inbound webhooks, bypassing the need for dashboard refreshes.
+16. **Geo-Spatial Map Prospecting (Phase 21 & 22 Completed):** Integrated the Nominatim Geocoding API to parse lead addresses into Map Coordinates via a new `GeocodingAdapter`. The `POST /api/leads` endpoint natively geocodes addresses and saves `latitude` and `longitude` fields to the `Lead` model in Prisma. Built a Circle Prospecting dashboard (`/map`) using `react-leaflet` and the Haversine formula to draw radial boundaries and dynamically export geographic `.csv` calling lists. The CSV import tool (`src/app/leads/import/page.tsx`) was also updated to accept address data fields.
+17. **Dynamic Provisioning:** Agents can pick their distinct Vapi AI voices from an API-fetched configuration dropdown.
+18. **Dockerization:** The application is fully containerized. A multi-stage `Dockerfile` leverages Next.js `standalone` output for tiny footprint production images, and `docker-compose.yml` provides a one-click local deployment with persistent SQLite volumes.
 
 ## Technical Notes for Future Developers
 - **Database:** Prisma ORM connected to SQLite (`dev.db`). Run `node setup.js` to automatically boostrap the database, compile the project, and seed the test user.
